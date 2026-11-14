@@ -1,9 +1,11 @@
 /* =========================================================
-   STEP 1: PASTE YOUR FORMSPREE LINK HERE
-   (see README.md → "Step 3"). It looks like:
-   https://formspree.io/f/abcdwxyz
+   STEP 1: YOUR WEB3FORMS ACCESS KEY
+   Orders are emailed to the address you used on web3forms.com
+   (see README.md → "Step 3"). This key is safe to be public:
+   it can only send emails to you.
    ========================================================= */
-const FORMSPREE_URL = "https://formspree.io/f/YOUR_FORM_ID";
+const WEB3FORMS_ACCESS_KEY = "fc8fd1ce-9ecf-439d-997d-4363f6bbb754";
+const WEB3FORMS_URL = "https://api.web3forms.com/submit";
 
 
 /* =========================================================
@@ -159,8 +161,8 @@ async function submitOrder(event) {
     message.classList.add("error");
     return;
   }
-  if (FORMSPREE_URL.includes("YOUR_FORM_ID")) {
-    message.textContent = "Setup needed: paste your Formspree link at the top of script.js.";
+  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_ACCESS_KEY")) {
+    message.textContent = "Setup needed: paste your Web3Forms access key at the top of script.js.";
     message.classList.add("error");
     return;
   }
@@ -177,10 +179,13 @@ async function submitOrder(event) {
   }).join("\n");
 
   const payload = {
-    _subject: `NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
+    access_key: WEB3FORMS_ACCESS_KEY,
+    from_name: "Farro's Kitchen Website",
+    subject: `NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
     email: data.get("email"),           // lets you hit "Reply" to answer the customer
+    replyto: data.get("email"),
     pickup_in: `${minutes} minutes`,
     pickup_time: readyAt,
     order: orderLines,
@@ -192,12 +197,13 @@ async function submitOrder(event) {
   button.textContent = "Sending…";
 
   try {
-    const response = await fetch(FORMSPREE_URL, {
+    const response = await fetch(WEB3FORMS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!response.ok) throw new Error("Server said no");
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
     message.textContent = `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
     message.classList.add("success");

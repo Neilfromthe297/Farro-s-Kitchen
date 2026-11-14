@@ -16,7 +16,7 @@ No coding experience needed to launch it. Follow the steps below in order.
 |---|---|---|
 | `index.html` | The structure of the page (header, menu area, cart, order form) | Yes: address, hours, phone |
 | `style.css` | Colors, fonts, layout | Optional: change colors at the top |
-| `script.js` | The menu items and prices, the cart, and sending the email | Yes: menu and the Formspree link |
+| `script.js` | The menu items and prices, the cart, and sending the email | Yes: menu and prices |
 
 ---
 
@@ -29,27 +29,21 @@ No coding experience needed to launch it. Follow the steps below in order.
 
 1. Double-click `index.html`. It opens in your browser.
 2. Click **+ Add** on a few dishes, then click **🛒 Cart** at the top right.
-3. If you try to place an order now, it will say *"Setup needed"*. That's expected. We'll fix it in Step 3.
+3. Placing an order from here sends a real email (see Step 3), so test with your own details.
 
 > 💡 Get a free code editor: **Visual Studio Code** (code.visualstudio.com). It makes editing these files much easier than Notepad.
 
-## Step 3: Make orders arrive in your email (Formspree, free)
+## Step 3: Make orders arrive in your email (Web3Forms, free) ✅ done
 
-Formspree is a service that takes the order form and emails it to you. You don't need a server.
+Web3Forms is a free service that takes the order form and emails it to you (250 orders/month free). You don't need a server.
 
-1. Go to **formspree.io** and sign up with the email address where **the restaurant should receive orders**.
-2. Click **+ New Form**, name it `Farro's Kitchen Orders`.
-3. Formspree shows you a link like `https://formspree.io/f/abcdwxyz`. **Copy it.**
-4. Open `script.js` and find this line near the top:
-   ```js
-   const FORMSPREE_URL = "https://formspree.io/f/YOUR_FORM_ID";
-   ```
-   Replace it with your link:
-   ```js
-   const FORMSPREE_URL = "https://formspree.io/f/abcdwxyz";
-   ```
-5. Save the file. Refresh the page, place a test order, and check your inbox (and spam folder).
-   The first time, Formspree may ask you to confirm your email.
+This is already set up: the access key is at the top of `script.js`:
+```js
+const WEB3FORMS_ACCESS_KEY = "fc8fd1ce-9ecf-439d-997d-4363f6bbb754";
+```
+Orders go to the email address used to create that key on **web3forms.com**.
+
+**To change which email receives orders:** create a new key on web3forms.com with the new email, and replace the key in `script.js`.
 
 **What the email looks like:**
 ```
@@ -67,7 +61,7 @@ special_instructions: No onions please
 ```
 You can hit **Reply** in your email to answer the customer directly.
 
-> ⚠️ Formspree's free plan has a limit on how many submissions you get per month (check their pricing page for the current number). That's enough to test and start. Upgrade when orders pick up.
+> ⚠️ The Web3Forms free plan allows 250 orders per month. Check web3forms.com/pricing if you need more.
 
 ## Step 4: Customize it for your restaurant
 
@@ -112,7 +106,7 @@ Other free options: **GitHub Pages** or **Cloudflare Pages**.
 ## Ideas for later, once you're comfortable
 
 - **Online payment:** add a Stripe or Square payment link. Right now customers pay at pickup.
-- **Customer confirmation email:** Formspree's paid plans can send an auto-reply to the customer.
+- **Customer confirmation email:** Web3Forms' paid plan can send an auto-reply to the customer.
 - **Sales tax line** in the cart total.
 - **Closed hours:** block orders when the restaurant is closed.
 - **Food photos** on each menu item.
