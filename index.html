@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farro's Kitchen | Order for Pickup</title>
+  <meta name="description" content="Order chicken, steak and fish online from Farro's Kitchen and pick it up fresh.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="topbar">
+    <div class="logo">Farro's <span>Kitchen</span></div>
+    <button class="cart-button" id="openCart" aria-label="Open cart">
+      🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <h1>Grilled fresh. Ready when you are.</h1>
+    <p>Order online, choose your pickup time, and we'll have it hot and waiting.</p>
+    <a href="#menu" class="btn">Start your order</a>
+  </section>
+
+  <!-- ===== CATEGORY TABS ===== -->
+  <nav class="tabs" id="menu">
+    <button class="tab active" data-category="all">All</button>
+    <button class="tab" data-category="chicken">🍗 Chicken</button>
+    <button class="tab" data-category="steak">🥩 Steak</button>
+    <button class="tab" data-category="fish">🐟 Fish</button>
+  </nav>
+
+  <!-- ===== MENU (filled in by script.js) ===== -->
+  <main class="menu" id="menuList"></main>
+
+  <!-- ===== INFO ===== -->
+  <section class="info">
+    <div>
+      <h3>📍 Location</h3>
+      <p>123 Main Street<br>Your City, ST 00000</p>
+    </div>
+    <div>
+      <h3>🕒 Hours</h3>
+      <p>Mon–Sat: 11am – 9pm<br>Sun: 12pm – 8pm</p>
+    </div>
+    <div>
+      <h3>📞 Call us</h3>
+      <p>(555) 123-4567</p>
+    </div>
+  </section>
+
+  <footer class="footer">© <span id="year"></span> Farro's Kitchen. Pickup only. Pay when you pick up.</footer>
+
+  <!-- ===== CART DRAWER ===== -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart" id="cart" aria-label="Your order">
+    <div class="cart-header">
+      <h2>Your Order</h2>
+      <button class="close" id="closeCart" aria-label="Close cart">✕</button>
+    </div>
+
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cartTotal">$0.00</strong>
+    </div>
+
+    <!-- CHECKOUT FORM -->
+    <form id="orderForm" class="order-form">
+      <h3>Pickup details</h3>
+
+      <label>Your name
+        <input type="text" name="name" required placeholder="Jane Smith">
+      </label>
+
+      <label>Phone number
+        <input type="tel" name="phone" required placeholder="(555) 555-5555">
+      </label>
+
+      <label>Email (for your receipt)
+        <input type="email" name="email" required placeholder="you@example.com">
+      </label>
+
+      <label>I'll pick up in…
+        <select name="pickup_minutes" required>
+          <option value="20">20 minutes</option>
+          <option value="30" selected>30 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="90">1 hour 30 minutes</option>
+        </select>
+      </label>
+
+      <label>Special instructions (optional)
+        <textarea name="notes" rows="2" placeholder="Allergies, extra sauce, etc."></textarea>
+      </label>
+
+      <button type="submit" class="btn btn-full" id="submitBtn">Place order</button>
+      <p class="form-message" id="formMessage"></p>
+    </form>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
