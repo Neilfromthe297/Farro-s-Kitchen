@@ -139,6 +139,31 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .open-status.is-open::before { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,.3); }
 .open-status.is-closed::before { background: #f87171; }
 
+/* Countdown to opening */
+.countdown { margin: -4px auto 22px; }
+.countdown[hidden] { display: none; }
+.hero .countdown-title {
+  font-weight: 700; font-size: .95rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--yellow); margin: 0 auto 10px; opacity: 1;
+}
+.countdown-boxes { display: flex; justify-content: center; align-items: flex-start; gap: 8px; }
+.cd-box {
+  min-width: 84px; padding: 10px 8px 8px; border-radius: 14px;
+  background: rgba(0,0,0,.5); border: 1px solid rgba(255,255,255,.15);
+  display: flex; flex-direction: column; align-items: center;
+}
+.cd-box span {
+  font-family: var(--font-heading); font-weight: 800; font-size: 2.4rem; line-height: 1;
+  font-variant-numeric: tabular-nums; color: #fff;
+}
+.cd-box small { margin-top: 6px; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: #eadfd5; }
+.cd-sep { font-family: var(--font-heading); font-weight: 800; font-size: 2rem; color: var(--yellow); padding-top: 8px; }
+@media (max-width: 600px) {
+  .cd-box { min-width: 70px; padding: 8px 6px 6px; }
+  .cd-box span { font-size: 2rem; }
+  .cd-sep { font-size: 1.6rem; padding-top: 6px; }
+}
+
 /* ===== STICKY CATEGORY BAR ===== */
 .tabs {
   position: sticky; top: var(--header-h); z-index: 15;

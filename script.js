@@ -408,9 +408,44 @@ const toMinutes = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return
 // Current day and minutes since midnight in Aruba, whatever the phone's time zone
 function arubaNow() {
   const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
-    timeZone: TIME_ZONE, weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    timeZone: TIME_ZONE, weekday: "long", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
   }).formatToParts(new Date()).map((p) => [p.type, p.value]));
-  return { day: parts.weekday, minutes: Number(parts.hour) * 60 + Number(parts.minute) };
+  const minutes = Number(parts.hour) * 60 + Number(parts.minute);
+  return { day: parts.weekday, minutes, seconds: minutes * 60 + Number(parts.second) };
+}
+
+// Seconds from now until the restaurant next opens (null if no opening hours are set)
+function secondsUntilOpen() {
+  const now = arubaNow();
+  const startIndex = DAYS.indexOf(now.day);
+  for (let i = 0; i < 8; i++) {
+    const h = todaysHours(DAYS[(startIndex + i) % 7]);
+    if (!h) continue;
+    if (i === 0 && now.minutes >= h.open) continue;
+    return i * 86400 + h.open * 60 - now.seconds;
+  }
+  return null;
+}
+
+// ---------- Countdown to opening (top of the page, only while closed) ----------
+let countdownWasRunning = false;
+function updateCountdown() {
+  const box = document.getElementById("countdown");
+  const secs = isOpenNow() ? null : secondsUntilOpen();
+  if (secs === null || secs <= 0) {
+    box.hidden = true;
+    if (countdownWasRunning) {          // just reached opening time
+      countdownWasRunning = false;
+      updateOpeningStatus();
+    }
+    return;
+  }
+  countdownWasRunning = true;
+  box.hidden = false;
+  const pad = (n) => String(n).padStart(2, "0");
+  document.getElementById("cdH").textContent = pad(Math.floor(secs / 3600));
+  document.getElementById("cdM").textContent = pad(Math.floor((secs % 3600) / 60));
+  document.getElementById("cdS").textContent = pad(secs % 60);
 }
 
 function clockLabel(totalMinutes) {
@@ -683,3 +718,5 @@ renderMenu();
 renderCart();
 updateOpeningStatus();
 setInterval(updateOpeningStatus, 60 * 1000);
+updateCountdown();
+setInterval(updateCountdown, 1000);
