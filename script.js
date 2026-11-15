@@ -21,7 +21,7 @@ const CURRENCY = "Afl.";
      name     dish name
      sub      optional second name (e.g. Spanish), shown smaller
      desc     optional description
-     img      optional photo in the images folder
+     img      photo in the images folder (optional: without it an icon shows)
      price    one price, OR
      sizes    { Small: 7.25, Large: 12.00 } for size choices, OR
      callToOrder: true   (no price online, shows a "Call to order" button)
@@ -45,65 +45,65 @@ const MENU = [
   { id: "p2",  category: "platters", name: "1 Whole Chicken", price: 34.50, img: "images/chicken.jpg" },
   { id: "p3",  category: "platters", name: "1/2 Lb. Steak", price: 29.00, img: "images/steak-fries.jpg" },
   { id: "p4",  category: "platters", name: "1 Lb. Steak", price: 38.50, img: "images/steak-pan.jpg" },
-  { id: "p5",  category: "platters", name: "1/2 Lb Onion Steak", sub: "Encebollado", price: 28.75 },
+  { id: "p5", img: "images/onion-steak.jpg",  category: "platters", name: "1/2 Lb Onion Steak", sub: "Encebollado", price: 28.75 },
   { id: "p6",  category: "platters", name: "1/2 Lb Pork Chop", price: 24.75, img: "images/porkchop.jpg" },
   { id: "p7",  category: "platters", name: "1 Lb Pork Chop", price: 37.25, img: "images/porkchop.jpg" },
   { id: "p8",  category: "platters", name: "Boneless Breast", price: 26.25, img: "images/chicken-breast.jpg" },
-  { id: "p9",  category: "platters", name: "Sauteed Beef", sub: "Lomo Saltado", price: 35.50 },
-  { id: "p10", category: "platters", name: "Sauteed Chicken", sub: "Pollo Saltado", price: 31.50 },
+  { id: "p9", img: "images/lomo-saltado.jpg",  category: "platters", name: "Sauteed Beef", sub: "Lomo Saltado", price: 35.50 },
+  { id: "p10", img: "images/pollo-saltado.jpg", category: "platters", name: "Sauteed Chicken", sub: "Pollo Saltado", price: 31.50 },
   { id: "p11", category: "platters", name: "1/2 Chicken Only", desc: "No sides.", price: 16.50, noSides: true, img: "images/chicken.jpg" },
   { id: "p12", category: "platters", name: "1 Whole Chicken Only", desc: "No sides.", price: 22.50, noSides: true, img: "images/chicken.jpg" },
   { id: "p13", category: "platters", name: "Chicken Wings", price: 24.50, img: "images/wings.jpg" },
   { id: "p14", category: "platters", name: "Pork Ribs", price: 24.50, img: "images/hero.jpg" },
-  { id: "p15", category: "platters", name: "Sancocho Rabo di Baca", price: 19.50 },
+  { id: "p15", img: "images/sancocho.jpg", category: "platters", name: "Sancocho Rabo di Baca", price: 19.50 },
 
   // ---- SEAFOOD ----
-  { id: "sf1",  category: "seafood", name: "Seafood Rice", sub: "Arroz con Mariscos", price: 36.50 },
-  { id: "sf2",  category: "seafood", name: "Seafood Fried Rice", sub: "Arroz Frito con Mariscos", price: 36.50 },
-  { id: "sf3",  category: "seafood", name: "Rice with Shrimps", sub: "Arroz con Camarones", price: 36.50 },
+  { id: "sf1", img: "images/seafood-rice.jpg",  category: "seafood", name: "Seafood Rice", sub: "Arroz con Mariscos", price: 36.50 },
+  { id: "sf2", img: "images/seafood-fried-rice.jpg",  category: "seafood", name: "Seafood Fried Rice", sub: "Arroz Frito con Mariscos", price: 36.50 },
+  { id: "sf3", img: "images/rice-shrimps.jpg",  category: "seafood", name: "Rice with Shrimps", sub: "Arroz con Camarones", price: 36.50 },
   { id: "sf4",  category: "seafood", name: "Shrimp Soup", sub: "Chupe de Camarones", price: 22.50, img: "images/shrimpsoup.jpg" },
-  { id: "sf5",  category: "seafood", name: "Fish Soup", sub: "Chupe de Pescado", price: 20.00 },
-  { id: "sf6",  category: "seafood", name: "Seafood Soup", sub: "Chupe de Mariscos", price: 22.50 },
-  { id: "sf7",  category: "seafood", name: "Shrimps Jelly", sub: "Jalea de Camarones", price: 37.50 },
-  { id: "sf8",  category: "seafood", name: "Fish Jelly", sub: "Jalea de Pescado", price: 36.50 },
-  { id: "sf9",  category: "seafood", name: "Garlic Fish", price: 32.50 },
-  { id: "sf10", category: "seafood", name: "Garlic Fish with Shrimps", price: 35.50 },
+  { id: "sf5", img: "images/fish-soup.jpg",  category: "seafood", name: "Fish Soup", sub: "Chupe de Pescado", price: 20.00 },
+  { id: "sf6", img: "images/seafood-soup.jpg",  category: "seafood", name: "Seafood Soup", sub: "Chupe de Mariscos", price: 22.50 },
+  { id: "sf7", img: "images/shrimp-jalea.jpg",  category: "seafood", name: "Shrimps Jelly", sub: "Jalea de Camarones", price: 37.50 },
+  { id: "sf8", img: "images/fish-jalea.jpg",  category: "seafood", name: "Fish Jelly", sub: "Jalea de Pescado", price: 36.50 },
+  { id: "sf9", img: "images/garlic-fish.jpg",  category: "seafood", name: "Garlic Fish", price: 32.50 },
+  { id: "sf10", img: "images/garlic-fish-shrimps.jpg", category: "seafood", name: "Garlic Fish with Shrimps", price: 35.50 },
   { id: "sf11", category: "seafood", name: "Criollo Fish", price: 32.50, img: "images/criollo-fish.jpg" },
-  { id: "sf12", category: "seafood", name: "Criollo Fish with Shrimps", price: 37.50 },
-  { id: "sf13", category: "seafood", name: "Mahi Mahi Fish", price: 25.50 },
-  { id: "sf14", category: "seafood", name: "Mahi Mahi Fish (2 persons)", price: 42.50 },
-  { id: "sf15", category: "seafood", name: "Onion Mahi Mahi", sub: "Encebollado", price: 26.50 },
-  { id: "sf16", category: "seafood", name: "Fish Mahi Mahi with Shrimps", price: 35.50 },
-  { id: "sf17", category: "seafood", name: "Spaguetti Shrimps Sauce", sub: "Spg. Salsa de Camarones", price: 37.50 },
-  { id: "sf18", category: "seafood", name: "Spaguetti with Seafood Mix", sub: "Spg. con Mariscos", price: 37.50 },
-  { id: "sf19", category: "seafood", name: "Spaguetti Alfredo with Ribs", price: 25.50 },
-  { id: "sf20", category: "seafood", name: "Spaguetti Beef", sub: "Spg. con Lomito", price: 35.50 },
-  { id: "sf21", category: "seafood", name: "Spaguetti Chicken", sub: "Spg. con Pollo", price: 31.50 },
+  { id: "sf12", img: "images/criollo-fish.jpg", category: "seafood", name: "Criollo Fish with Shrimps", price: 37.50 },
+  { id: "sf13", img: "images/mahi-mahi.jpg", category: "seafood", name: "Mahi Mahi Fish", price: 25.50 },
+  { id: "sf14", img: "images/mahi-mahi.jpg", category: "seafood", name: "Mahi Mahi Fish (2 persons)", price: 42.50 },
+  { id: "sf15", img: "images/onion-mahi.jpg", category: "seafood", name: "Onion Mahi Mahi", sub: "Encebollado", price: 26.50 },
+  { id: "sf16", img: "images/garlic-fish-shrimps.jpg", category: "seafood", name: "Fish Mahi Mahi with Shrimps", price: 35.50 },
+  { id: "sf17", img: "images/spaghetti-shrimp.jpg", category: "seafood", name: "Spaguetti Shrimps Sauce", sub: "Spg. Salsa de Camarones", price: 37.50 },
+  { id: "sf18", img: "images/spaghetti-seafood.jpg", category: "seafood", name: "Spaguetti with Seafood Mix", sub: "Spg. con Mariscos", price: 37.50 },
+  { id: "sf19", img: "images/spaghetti-alfredo.jpg", category: "seafood", name: "Spaguetti Alfredo with Ribs", price: 25.50 },
+  { id: "sf20", img: "images/spaghetti-beef.jpg", category: "seafood", name: "Spaguetti Beef", sub: "Spg. con Lomito", price: 35.50 },
+  { id: "sf21", img: "images/spaghetti-chicken.jpg", category: "seafood", name: "Spaguetti Chicken", sub: "Spg. con Pollo", price: 31.50 },
 
   // ---- SANDWICHES ----
-  { id: "sw1", category: "sandwiches", name: "Chicken Sandwich", price: 16.75 },
-  { id: "sw2", category: "sandwiches", name: "Steak Sandwich", price: 16.75 },
-  { id: "sw3", category: "sandwiches", name: "Pork Sandwich", price: 16.75 },
-  { id: "sw4", category: "sandwiches", name: "Fish Sandwich", price: 16.75 },
+  { id: "sw1", img: "images/sandwich-chicken.jpg", category: "sandwiches", name: "Chicken Sandwich", price: 16.75 },
+  { id: "sw2", img: "images/sandwich-steak.jpg", category: "sandwiches", name: "Steak Sandwich", price: 16.75 },
+  { id: "sw3", img: "images/sandwich-pork.jpg", category: "sandwiches", name: "Pork Sandwich", price: 16.75 },
+  { id: "sw4", img: "images/sandwich-fish.jpg", category: "sandwiches", name: "Fish Sandwich", price: 16.75 },
 
   // ---- SIDE ORDERS ----
-  { id: "sd1", category: "sides", name: "Rice", sizes: { Small: 7.25, Large: 12.00 } },
-  { id: "sd2", category: "sides", name: "Onion Potatoes", sizes: { Small: 8.75, Large: 13.50 } },
-  { id: "sd3", category: "sides", name: "French Fries", sizes: { Small: 7.25, Large: 12.00 } },
-  { id: "sd4", category: "sides", name: "Fried Yuca", sizes: { Small: 8.75, Large: 12.50 } },
-  { id: "sd5", category: "sides", name: "Fried Rice", sizes: { Small: 9.25, Large: 13.25 } },
-  { id: "sd6", category: "sides", name: "Banana", sizes: { Small: 7.50, Large: 12.25 } },
+  { id: "sd1", img: "images/rice.jpg", category: "sides", name: "Rice", sizes: { Small: 7.25, Large: 12.00 } },
+  { id: "sd2", img: "images/potatoes.jpg", category: "sides", name: "Onion Potatoes", sizes: { Small: 8.75, Large: 13.50 } },
+  { id: "sd3", img: "images/fries.jpg", category: "sides", name: "French Fries", sizes: { Small: 7.25, Large: 12.00 } },
+  { id: "sd4", img: "images/yuca.jpg", category: "sides", name: "Fried Yuca", sizes: { Small: 8.75, Large: 12.50 } },
+  { id: "sd5", img: "images/fried-rice.jpg", category: "sides", name: "Fried Rice", sizes: { Small: 9.25, Large: 13.25 } },
+  { id: "sd6", img: "images/banana.jpg", category: "sides", name: "Banana", sizes: { Small: 7.50, Large: 12.25 } },
 
   // ---- SALADS ----
-  { id: "sl1", category: "salads", name: "Lettuce", sizes: { Small: 8.75, Large: 13.50 } },
-  { id: "sl2", category: "salads", name: "Coleslaw", sizes: { Small: 8.75, Large: 13.50 } },
-  { id: "sl3", category: "salads", name: "Potato Salad", sizes: { Small: 8.75, Large: 13.50 } },
-  { id: "sl4", category: "salads", name: "Mix Salad", sizes: { Small: 8.75, Large: 13.50 } },
+  { id: "sl1", img: "images/salad-green.jpg", category: "salads", name: "Lettuce", sizes: { Small: 8.75, Large: 13.50 } },
+  { id: "sl2", img: "images/coleslaw.jpg", category: "salads", name: "Coleslaw", sizes: { Small: 8.75, Large: 13.50 } },
+  { id: "sl3", img: "images/potatoes.jpg", category: "salads", name: "Potato Salad", sizes: { Small: 8.75, Large: 13.50 } },
+  { id: "sl4", img: "images/salad-mix.jpg", category: "salads", name: "Mix Salad", sizes: { Small: 8.75, Large: 13.50 } },
 
   // ---- FAMILY MEALS (no price yet: add "price: 00.00" and remove callToOrder to sell online) ----
-  { id: "fm1", category: "family", name: "Family Meal 1", callToOrder: true,
+  { id: "fm1", img: "images/family-chicken.jpg", category: "family", name: "Family Meal 1", callToOrder: true,
     desc: "1 whole chicken, 1/2 lb. grilled steak, 1/2 lb. grilled pork, 1 pork ribs. Served with 1 large rice, large potatoes, 2L Coca-Colas and onion sauce." },
-  { id: "fm2", category: "family", name: "Family Meal 2", sub: "Bandeja Familiar (Lomito)", callToOrder: true,
+  { id: "fm2", img: "images/family-lomito.jpg", category: "family", name: "Family Meal 2", sub: "Bandeja Familiar (Lomito)", callToOrder: true,
     desc: "Served with 1 large rice, 1 large french fries and 2L Coca-Colas." },
 ];
 
