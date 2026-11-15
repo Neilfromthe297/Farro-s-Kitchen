@@ -12,42 +12,44 @@ const WEB3FORMS_URL = "https://api.web3forms.com/submit";
    STEP 2: YOUR MENU
    Edit names, descriptions and prices here.
    Every item needs a unique "id".
+   "img" is the dish's photo in the images folder. To use your own
+   photo, upload it to images/ with the same name (e.g. images/c1.jpg).
    ========================================================= */
 const MENU = [
   // ---- CHICKEN ----
-  { id: "c1", category: "chicken", name: "Grilled Lemon Herb Chicken", price: 14.99,
+  { id: "c1", img: "images/c1.jpg", category: "chicken", name: "Grilled Lemon Herb Chicken", price: 14.99,
     desc: "Juicy chicken breast marinated in lemon, garlic and herbs. Served with rice and salad." },
-  { id: "c2", category: "chicken", name: "Crispy Fried Chicken (3 pc)", price: 12.99,
+  { id: "c2", img: "images/c2.jpg", category: "chicken", name: "Crispy Fried Chicken (3 pc)", price: 12.99,
     desc: "Golden buttermilk fried chicken with fries and coleslaw." },
-  { id: "c3", category: "chicken", name: "BBQ Chicken Plate", price: 15.49,
+  { id: "c3", img: "images/c3.jpg", category: "chicken", name: "BBQ Chicken Plate", price: 15.49,
     desc: "Smoky BBQ-glazed chicken thighs with mac & cheese and cornbread." },
-  { id: "c4", category: "chicken", name: "Spicy Chicken Wings (10 pc)", price: 13.99,
+  { id: "c4", img: "images/c4.jpg", category: "chicken", name: "Spicy Chicken Wings (10 pc)", price: 13.99,
     desc: "Buffalo, honey garlic or lemon pepper. Served with ranch or blue cheese." },
-  { id: "c5", category: "chicken", name: "Chicken Parmesan", price: 16.99,
+  { id: "c5", img: "images/c5.jpg", category: "chicken", name: "Chicken Parmesan", price: 16.99,
     desc: "Breaded chicken topped with marinara and melted mozzarella, over spaghetti." },
 
   // ---- STEAK ----
-  { id: "s1", category: "steak", name: "Ribeye Steak (12 oz)", price: 29.99,
+  { id: "s1", img: "images/s1.jpg", category: "steak", name: "Ribeye Steak (12 oz)", price: 29.99,
     desc: "Well-marbled ribeye grilled to order. Served with mashed potatoes and veggies." },
-  { id: "s2", category: "steak", name: "Filet Mignon (8 oz)", price: 34.99,
+  { id: "s2", img: "images/s2.jpg", category: "steak", name: "Filet Mignon (8 oz)", price: 34.99,
     desc: "Our most tender cut, with garlic butter, asparagus and baked potato." },
-  { id: "s3", category: "steak", name: "New York Strip (10 oz)", price: 26.99,
+  { id: "s3", img: "images/s3.jpg", category: "steak", name: "New York Strip (10 oz)", price: 26.99,
     desc: "Bold, beefy strip steak with fries and a side salad." },
-  { id: "s4", category: "steak", name: "Steak Tacos (3)", price: 15.99,
+  { id: "s4", img: "images/s4.jpg", category: "steak", name: "Steak Tacos (3)", price: 15.99,
     desc: "Grilled skirt steak, onions, cilantro and lime on corn tortillas." },
-  { id: "s5", category: "steak", name: "Steak & Shrimp Combo", price: 32.99,
+  { id: "s5", img: "images/s5.jpg", category: "steak", name: "Steak & Shrimp Combo", price: 32.99,
     desc: "Sirloin steak plus garlic butter shrimp, with rice and vegetables." },
 
   // ---- FISH ----
-  { id: "f1", category: "fish", name: "Grilled Salmon", price: 22.99,
+  { id: "f1", img: "images/f1.jpg", category: "fish", name: "Grilled Salmon", price: 22.99,
     desc: "Atlantic salmon with lemon dill sauce, quinoa and roasted vegetables." },
-  { id: "f2", category: "fish", name: "Fish & Chips", price: 16.99,
+  { id: "f2", img: "images/f2.jpg", category: "fish", name: "Fish & Chips", price: 16.99,
     desc: "Beer-battered cod with fries, tartar sauce and lemon." },
-  { id: "f3", category: "fish", name: "Blackened Tilapia", price: 17.99,
+  { id: "f3", img: "images/f3.jpg", category: "fish", name: "Blackened Tilapia", price: 17.99,
     desc: "Cajun-spiced tilapia with dirty rice and sautéed greens." },
-  { id: "f4", category: "fish", name: "Fish Tacos (3)", price: 14.99,
+  { id: "f4", img: "images/f4.jpg", category: "fish", name: "Fish Tacos (3)", price: 14.99,
     desc: "Crispy white fish, cabbage slaw and chipotle crema." },
-  { id: "f5", category: "fish", name: "Garlic Butter Shrimp Plate", price: 19.99,
+  { id: "f5", img: "images/f5.jpg", category: "fish", name: "Garlic Butter Shrimp Plate", price: 19.99,
     desc: "Sautéed shrimp in garlic butter with rice and garlic bread." },
 ];
 
@@ -80,6 +82,7 @@ function renderMenu(filter = "all") {
     items.forEach((item) => {
       grid.innerHTML += `
         <div class="item">
+          <img class="item-photo" src="${item.img}" alt="${item.name}" loading="lazy">
           <h4>${item.name}</h4>
           <p>${item.desc}</p>
           <div class="item-bottom">
