@@ -290,6 +290,76 @@ function closeOptions(fromBackButton = false) {
   updateScrollLock();
 }
 
+// ---------- Order number & on-screen receipt ----------
+// Short, easy-to-read order number like "LG-7KQ4" (no 0/O or 1/I to avoid mix-ups)
+function makeOrderNumber() {
+  const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  let code = "";
+  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return `LG-${code}`;
+}
+
+const RECEIPT_HOURS = 12;      // how long the last receipt stays available
+let lastOrder = loadLastOrder();
+
+function saveLastOrder(order) {
+  lastOrder = order;
+  try { localStorage.setItem("lastOrder", JSON.stringify(order)); } catch (e) { /* ignore */ }
+}
+function loadLastOrder() {
+  try {
+    const o = JSON.parse(localStorage.getItem("lastOrder") || "null");
+    if (o && Date.now() - o.savedAt < RECEIPT_HOURS * 3600 * 1000) return o;
+    localStorage.removeItem("lastOrder");
+  } catch (e) { /* ignore */ }
+  return null;
+}
+function clearLastOrder() {
+  lastOrder = null;
+  try { localStorage.removeItem("lastOrder"); } catch (e) { /* ignore */ }
+}
+
+// Shows the receipt in the cart when the last order was placed and the cart is empty
+function renderReceipt() {
+  const cartEl = document.getElementById("cart");
+  const box = document.getElementById("receipt");
+  const show = Boolean(lastOrder) && cart.length === 0;
+  cartEl.classList.toggle("showing-receipt", show);
+  box.hidden = !show;
+  if (!show) return;
+  const o = lastOrder;
+  const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const lines = o.lines.map((l) => `
+    <li>
+      <span class="rc-qty">${l.qty}×</span>
+      <span class="rc-name">${lineName(l)}${l.sides.length ? `<small>${t("sides_list", { list: l.sides.map((s) => t(`side_${s}`)).join(", ") })}</small>` : ""}</span>
+      <span class="rc-price">${money(l.price * l.qty)}</span>
+    </li>`).join("");
+  box.innerHTML = `
+    <div class="rc-head">
+      ${icon("circle-check")}
+      <h3>${t("rc_title")}</h3>
+      <p>${esc(t("rc_thanks", { name: o.name }))}</p>
+    </div>
+    <div class="rc-number">
+      <small>${t("rc_number_label")}</small>
+      <strong>#${o.number}</strong>
+    </div>
+    <p class="rc-hint">${t("rc_show")}</p>
+    <dl class="rc-facts">
+      <div><dt>${icon("clock")} ${t("rc_ready")}</dt><dd>${o.readyAt}</dd></div>
+      <div><dt>${icon(o.driveThru ? "car" : "house")} ${t("rc_pickup")}</dt>
+        <dd>${t(o.driveThru ? "drive_thru" : "pickup_inside")}${o.driveThru && o.car ? ` · ${esc(o.car)}` : ""}</dd></div>
+      <div><dt>${icon("map-pin")} ${t("rc_where")}</dt><dd>Zandstraat 2, Oranjestad</dd></div>
+    </dl>
+    ${o.needsCall ? `<p class="rc-call">${icon("phone")} ${esc(t("rc_call", { phone: o.phone }))}</p>` : ""}
+    <ul class="rc-lines">${lines}</ul>
+    <div class="rc-total"><span>${t("total")}</span><strong>${money(o.total)}</strong></div>
+    <p class="rc-pay">${t("rc_pay")}</p>
+    <p class="rc-help">${t("rc_help")} <a href="tel:${PHONE.replace(/[^\d+]/g, "")}">${PHONE}</a></p>
+    <button type="button" class="btn btn-full" id="newOrderBtn">${t("rc_new")}</button>`;
+}
+
 // ---------- Phone helpers ----------
 const isCartOpen = () => document.getElementById("cart").classList.contains("open");
 
@@ -379,6 +449,7 @@ function renderCart() {
   document.getElementById("cartCount").textContent = count;
   document.getElementById("cartTotal").textContent = money(cartTotal());
   updateOrderBar();
+  renderReceipt();
 }
 
 // "View order" bar at the bottom of the screen once the cart has items
@@ -583,6 +654,7 @@ async function submitOrder(event) {
       : closedMessage());
   }
   const readyAt = clockLabel(arubaNow().minutes + minutes);
+  const orderNumber = makeOrderNumber();
 
   // Build a readable order list for the email
   const orderLines = cart.map((l) => {
@@ -594,7 +666,8 @@ async function submitOrder(event) {
   const payload = {
     access_key: WEB3FORMS_ACCESS_KEY,
     from_name: "La Granja Website",
-    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}NEW ORDER: ${data.get("name")} — ${isDriveThru ? "🚗 DRIVE-THRU" : "pickup inside"} in ${minutes} min (${readyAt})`,
+    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}#${orderNumber} NEW ORDER: ${data.get("name")} — ${isDriveThru ? "🚗 DRIVE-THRU" : "pickup inside"} in ${minutes} min (${readyAt})`,
+    order_number: `#${orderNumber}`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
     email: data.get("email"),           // lets you hit "Reply" to answer the customer
@@ -624,10 +697,13 @@ async function submitOrder(event) {
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
-    setMessage(message, "success", needsCall
-      ? t("ok_large", { name: data.get("name"), phone: data.get("phone") })
-      : `${t("ok_ready", { name: data.get("name"), time: readyAt })} ${t(isDriveThru ? "ok_drive" : "ok_inside")}`);
-    message.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Keep a copy of the order to show as an on-screen receipt
+    saveLastOrder({
+      number: orderNumber, name: String(data.get("name")), phone: String(data.get("phone")),
+      lines: cart.map((l) => ({ id: l.id, size: l.size, sides: l.sides, price: l.price, qty: l.qty })),
+      total: cartTotal(), readyAt, driveThru: isDriveThru, car, needsCall, savedAt: Date.now(),
+    });
+    setMessage(message, "", "");
     cart = [];
     renderCart();
     form.reset();
@@ -686,6 +762,13 @@ document.getElementById("openCart").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
 document.getElementById("orderBar").addEventListener("click", openCart);
+document.getElementById("receipt").addEventListener("click", (e) => {
+  if (!e.target.closest("#newOrderBtn")) return;
+  clearLastOrder();
+  renderReceipt();
+  closeCart();
+  document.getElementById("menu").scrollIntoView({ behavior: "smooth" });
+});
 document.getElementById("optionsAdd").addEventListener("click", confirmOptions);
 document.getElementById("optionsCancel").addEventListener("click", closeOptions);
 document.getElementById("orderForm").addEventListener("submit", submitOrder);

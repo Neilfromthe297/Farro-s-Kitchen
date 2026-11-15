@@ -351,6 +351,41 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .cart-total { display: flex; justify-content: space-between; font-size: 1.25rem; padding: 16px 0; }
 .cart-total strong { font-family: var(--font-heading); }
 
+/* ===== ON-SCREEN RECEIPT ===== */
+.receipt[hidden] { display: none; }
+.cart.showing-receipt #cartItems,
+.cart.showing-receipt .cart-total,
+.cart.showing-receipt #orderForm { display: none; }
+.receipt { display: flex; flex-direction: column; gap: 14px; padding-top: 6px; }
+.rc-head { text-align: center; }
+.rc-head .icon { width: 52px; height: 52px; color: var(--success); }
+.rc-head h3 { font-size: 1.6rem; margin-top: 6px; }
+.rc-head p { color: var(--muted); }
+.rc-number {
+  text-align: center; background: var(--cream); border: 2px dashed var(--brand);
+  border-radius: 16px; padding: 14px;
+}
+.rc-number small { display: block; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--muted); font-size: .8rem; }
+.rc-number strong { font-family: var(--font-heading); font-size: 2.6rem; font-weight: 800; color: var(--brand); letter-spacing: .04em; }
+.rc-hint { text-align: center; font-size: .9rem; color: var(--muted); }
+.rc-facts { display: grid; gap: 8px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.rc-facts div { display: flex; justify-content: space-between; gap: 12px; }
+.rc-facts dt { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.rc-facts dt .icon { color: var(--brand); }
+.rc-facts dd { font-weight: 700; text-align: right; }
+.rc-call { display: flex; gap: 8px; align-items: flex-start; background: #fff7e0; border: 1px solid #f5d27a; border-radius: 10px; padding: 10px 12px; font-weight: 600; }
+.rc-lines { list-style: none; border-top: 1px solid var(--border); }
+.rc-lines li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.rc-qty { font-weight: 700; color: var(--brand); min-width: 28px; }
+.rc-name { flex: 1; font-weight: 600; }
+.rc-name small { display: block; font-weight: 400; color: var(--muted); }
+.rc-price { font-weight: 700; white-space: nowrap; }
+.rc-total { display: flex; justify-content: space-between; font-size: 1.25rem; }
+.rc-total strong { font-family: var(--font-heading); }
+.rc-pay { font-weight: 700; color: var(--success); }
+.rc-help { color: var(--muted); font-size: .95rem; }
+.rc-help a { color: var(--brand); font-weight: 700; }
+
 /* ===== CHECKOUT FORM ===== */
 .order-form { display: flex; flex-direction: column; gap: 12px; }
 .order-form h3 { font-size: 1.2rem; }
