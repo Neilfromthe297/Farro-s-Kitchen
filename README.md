@@ -86,20 +86,22 @@ You can hit **Reply** in your email to answer the customer directly.
 - **Colors:** at the top of `style.css`, change `--brand` (for example `#15803d` for green).
 - **Big top photo:** in `style.css`, replace the `url("https://images.unsplash.com/...")` with your own photo.
 
-## Step 5: Put it on the internet (free)
+## Step 5: Where the website lives (hosting)
 
-The easiest option is **Netlify Drop**:
-1. Go to **app.netlify.com/drop** and create a free account.
-2. Drag your whole `farros-kitchen` folder onto the page.
-3. After a few seconds you get a live link like `https://farros-kitchen-123.netlify.app`. Share it!
-4. To update the site later, drag the folder again on your site's **Deploys** page.
+The site is hosted for free on **Cloudflare**, connected to this GitHub repository:
 
-Other free options: **GitHub Pages** or **Cloudflare Pages**.
+**Live site: https://lagranja-aruba.neil-j-farro.workers.dev**
+
+- Every change saved to the `main` branch on GitHub goes live on Cloudflare automatically within a minute or two.
+- Changes on other branches (drafts, like `payment-demo`) do **not** go live.
+- To see deploys or settings: **dash.cloudflare.com → Workers & Pages → lagranja-aruba**.
+- Cloudflare shortens page addresses: `privacy.html` is served as `/privacy`. Links with `.html` still work.
 
 ## Step 6 (optional): Get your own domain
 
-1. Buy a domain like `lagranja.aw` (Aruba's own .aw ending) or a `.com` from a registrar like Namecheap, Cloudflare or Porkbun.
-2. In Netlify go to **Domain settings → Add custom domain** and follow the instructions.
+1. Buy a domain, for example `lagranja.aw` (Aruba's own .aw ending, bought in Aruba) or a `.com` (Cloudflare itself sells domains at cost).
+2. In Cloudflare go to **Workers & Pages → lagranja-aruba → Settings → Domains & Routes → Add → Custom domain**, and follow the instructions. HTTPS is included.
+3. Register the domain **in the restaurant's name**.
 
 ## Languages: English, Spanish, Papiamento
 
