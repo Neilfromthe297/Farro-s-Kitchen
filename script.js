@@ -13,6 +13,13 @@ const PHONE = "+297 569 1341";
 // Currency shown in front of every price
 const CURRENCY = "Afl.";
 
+/* ---------- CARD PAYMENT ----------
+   "demo": shows what paying through Aruba Bank will look like. No card
+           details are asked for and NO money is charged. The order email
+           says "DEMO - NOT PAID".
+   Replace with the real Aruba Bank / CX Pay payment page once approved. */
+const PAYMENT_MODE = "demo";
+
 /* ---------- FAKE-ORDER PROTECTION (amounts in florins) ---------- */
 // Most of one dish (same options) a customer can order online
 const MAX_QTY_PER_ITEM = 10;
@@ -350,6 +357,15 @@ async function submitOrder(event) {
   // Web3Forms automatically rejects the order when it's ticked.
   if (data.get("botcheck")) payload.botcheck = true;
 
+  // Card payment first: the order is only sent after the payment succeeds
+  const payment = await collectPayment(cartTotal(), data.get("name"));
+  if (!payment.paid) {
+    return fail(payment.cancelled
+      ? "Payment cancelled. Your order was not placed."
+      : "❌ The payment didn't go through, so your order was not placed. Nothing was charged. Please try again.");
+  }
+  payload.payment = payment.label;
+
   button.disabled = true;
   button.textContent = "Sending…";
 
@@ -362,9 +378,7 @@ async function submitOrder(event) {
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
-    message.textContent = needsCall
-      ? `✅ Thank you, ${data.get("name")}! Because this is a large order, we'll call you at ${data.get("phone")} to confirm before we start cooking.`
-      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
+    message.textContent = `✅ Payment received. Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
     message.classList.add("success");
     message.scrollIntoView({ behavior: "smooth", block: "center" });
     cart = [];
@@ -374,8 +388,31 @@ async function submitOrder(event) {
     fail(`❌ Sorry, your order didn't go through. Please call us at ${PHONE}.`);
   } finally {
     button.disabled = false;
-    button.textContent = "Place order";
+    button.textContent = "Pay & place order";
   }
+}
+
+// ---------- Card payment ----------
+// Resolves to { paid: true, label } or { paid: false, cancelled }
+function collectPayment(amount, name) {
+  if (PAYMENT_MODE !== "demo") {
+    // Real payment provider goes here (Aruba Bank / CX Pay hosted payment page)
+    return Promise.resolve({ paid: false });
+  }
+  return new Promise((resolve) => {
+    const box = document.getElementById("payDemo");
+    document.getElementById("payDemoAmount").textContent = money(amount);
+    box.classList.add("open");
+    const finish = (result) => {
+      box.classList.remove("open");
+      box.querySelectorAll("button").forEach((b) => (b.onclick = null));
+      resolve(result);
+    };
+    document.getElementById("payDemoSuccess").onclick = () =>
+      finish({ paid: true, label: `DEMO - NOT PAID (simulated card payment of ${money(amount)})` });
+    document.getElementById("payDemoFail").onclick = () => finish({ paid: false });
+    document.getElementById("payDemoCancel").onclick = () => finish({ paid: false, cancelled: true });
+  });
 }
 
 // ---------- Hook everything up ----------

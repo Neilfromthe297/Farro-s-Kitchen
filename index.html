@@ -6,7 +6,7 @@
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja in Oranjestad, Aruba, and pick it up fresh.">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -121,8 +121,19 @@
       <!-- Spam trap: hidden from people, robots fill it in -->
       <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <p class="form-note">We may call to confirm your order. Large orders are confirmed by phone before we start cooking.</p>
-      <button type="submit" class="btn btn-full" id="submitBtn">Place order</button>
+      <div class="pay-method">
+        <h3>Payment</h3>
+        <label class="choice pay-choice">
+          <input type="radio" name="payment_method" value="card" checked>
+          <span>
+            <strong>Credit or debit card</strong><br>
+            <small>Visa · Mastercard · Discover · American Express</small>
+          </span>
+          <img src="images/arubabank-logo.png" alt="Aruba Bank" class="pay-logo">
+        </label>
+        <p class="form-note">You'll pay securely on Aruba Bank's payment page. Your order is sent to the kitchen once the payment is approved.</p>
+      </div>
+      <button type="submit" class="btn btn-full" id="submitBtn">Pay &amp; place order</button>
       <p class="form-message" id="formMessage"></p>
     </form>
   </aside>
@@ -139,6 +150,20 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="script.js?v=12"></script>
+  <!-- ===== DEMO PAYMENT SCREEN (no card details, no real charge) ===== -->
+  <div class="paydemo" id="payDemo" role="dialog" aria-label="Demo payment">
+    <div class="paydemo-box">
+      <div class="paydemo-banner">DEMO · No real payment · No card details needed</div>
+      <img src="images/arubabank-logo.png" alt="Aruba Bank" class="paydemo-logo">
+      <p class="paydemo-merchant">Payment to <strong>La Granja</strong></p>
+      <p class="paydemo-amount" id="payDemoAmount">Afl. 0.00</p>
+      <p class="paydemo-note">In the real version, the customer enters their card here, on Aruba Bank's secure page. For this demo, choose what happens:</p>
+      <button type="button" class="btn btn-full" id="payDemoSuccess">✅ Simulate approved payment</button>
+      <button type="button" class="btn btn-full btn-light" id="payDemoFail">❌ Simulate declined card</button>
+      <button type="button" class="paydemo-cancel" id="payDemoCancel">Cancel</button>
+    </div>
+  </div>
+
+  <script src="script.js?v=13"></script>
 </body>
 </html>
