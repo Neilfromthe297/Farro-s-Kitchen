@@ -763,6 +763,21 @@ document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
 document.getElementById("orderBar").addEventListener("click", openCart);
 
+// ---------- Chicken animation in the logo ----------
+// The chicken moves for 10 seconds, then stays still; this repeats every minute.
+const CHICKEN_MOVES_FOR = 10 * 1000;
+const CHICKEN_EVERY = 60 * 1000;
+function animateChicken() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const logo = document.getElementById("logoAnim");
+  logo.classList.remove("chicken-on");
+  void logo.offsetWidth;                 // restart the animation
+  logo.classList.add("chicken-on");
+  setTimeout(() => logo.classList.remove("chicken-on"), CHICKEN_MOVES_FOR);
+}
+setTimeout(animateChicken, 1500);        // first time shortly after the page opens
+setInterval(animateChicken, CHICKEN_EVERY);
+
 // Tapping the logo refreshes the page and starts at the top
 document.getElementById("logoLink").addEventListener("click", (e) => {
   e.preventDefault();

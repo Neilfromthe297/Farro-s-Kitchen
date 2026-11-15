@@ -9,7 +9,7 @@
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
   <link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/bitter-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <!-- Icons: Lucide v0.460.0 (https://lucide.dev), ISC License.
@@ -39,7 +39,14 @@
 
   <!-- ===== TOP BAR ===== -->
   <header class="topbar">
-    <a class="logo" href="./" id="logoLink"><img src="images/logo.png" alt="La Granja"></a>
+    <a class="logo" href="./" id="logoLink" aria-label="La Granja">
+      <!-- Logo in 3 layers so the chicken's head and tail can move -->
+      <span class="logo-anim" id="logoAnim">
+        <img class="logo-layer" src="images/logo-base.png" alt="La Granja">
+        <img class="logo-layer logo-tail" src="images/logo-tail.png" alt="" aria-hidden="true">
+        <img class="logo-layer logo-head" src="images/logo-head.png" alt="" aria-hidden="true">
+      </span>
+    </a>
     <nav class="topnav">
       <a href="#menu" data-i18n="nav_menu">Menu</a>
       <a href="#about" data-i18n="nav_about">About</a>
@@ -248,7 +255,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="i18n.js?v=24"></script>
-  <script src="script.js?v=24"></script>
+  <script src="i18n.js?v=25"></script>
+  <script src="script.js?v=25"></script>
 </body>
 </html>
