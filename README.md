@@ -4,7 +4,7 @@ A simple website where customers:
 1. Browse the menu (Chicken, Steak, Fish)
 2. Add items to their cart
 3. Enter their name, phone, and email, and choose **how many minutes until pickup**
-4. Click **Place order**, and **the restaurant receives an email** with the full order
+4. Tap **Send order on WhatsApp**: WhatsApp opens with the order typed out to the restaurant (+297 569 1341), and the customer taps **Send**. **An email copy is sent automatically too**, as a backup
 
 No coding experience needed to launch it. Follow the steps below in order.
 
@@ -32,6 +32,16 @@ No coding experience needed to launch it. Follow the steps below in order.
 3. Placing an order from here sends a real email (see Step 3), so test with your own details.
 
 > 💡 Get a free code editor: **Visual Studio Code** (code.visualstudio.com). It makes editing these files much easier than Notepad.
+
+## How orders arrive: WhatsApp + email
+
+Every order arrives two ways:
+1. **WhatsApp (main):** the customer's WhatsApp opens with the order typed out to `WHATSAPP_NUMBER` (top of `script.js`). They tap **Send**.
+2. **Email (backup):** a copy is always emailed through Web3Forms (Step 3), even if the customer forgets to tap Send.
+
+**If you get the email but no WhatsApp message**, the customer probably didn't tap Send. Call or message them to confirm.
+
+To change the WhatsApp number, edit `WHATSAPP_NUMBER` at the top of `script.js` (include the country code, e.g. `+297 ...`).
 
 ## Step 3: Make orders arrive in your email (Web3Forms, free) ✅ done
 

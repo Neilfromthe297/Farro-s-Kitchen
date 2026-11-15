@@ -7,6 +7,10 @@
 const WEB3FORMS_ACCESS_KEY = "fc8fd1ce-9ecf-439d-997d-4363f6bbb754";
 const WEB3FORMS_URL = "https://api.web3forms.com/submit";
 
+// Restaurant WhatsApp: every order opens WhatsApp with the order typed out
+// to this number (an email copy is also sent as a backup)
+const WHATSAPP_NUMBER = "+297 569 1341";
+
 // Restaurant phone (used for "Call to order" buttons and error messages)
 const PHONE = "(555) 123-4567";
 
@@ -354,32 +358,93 @@ async function submitOrder(event) {
   // Web3Forms automatically rejects the order when it's ticked.
   if (data.get("botcheck")) payload.botcheck = true;
 
+  payload.sent_on_whatsapp = "Customer was sent to WhatsApp to send this order. If no WhatsApp message arrives, call them.";
+
+  // A robot ticked the hidden box: send nothing to WhatsApp (Web3Forms drops the email)
+  const isBot = Boolean(data.get("botcheck"));
+
+  // 1) Open WhatsApp with the order typed out. This must happen right away,
+  //    while the customer's tap is "fresh", or phones may block it.
+  const waUrl = whatsappLink(buildWhatsAppText({
+    name: data.get("name"), phone: data.get("phone"), minutes, readyAt,
+    notes: data.get("notes"), needsCall,
+  }));
+  const waWindow = isBot ? null : window.open(waUrl, "_blank");
+
+  // 2) Send the email copy in the background (backup)
   button.disabled = true;
   button.textContent = "Sending…";
-
   try {
     const response = await fetch(WEB3FORMS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
-    if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
-
-    message.textContent = needsCall
-      ? `✅ Thank you, ${data.get("name")}! Because this is a large order, we'll call you at ${data.get("phone")} to confirm before we start cooking.`
-      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
-    message.classList.add("success");
-    cart = [];
-    renderCart();
-    form.reset();
+    await response.json();
   } catch (err) {
-    message.textContent = `❌ Sorry, your order didn't go through. Please call us at ${PHONE}.`;
-    message.classList.add("error");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Place order";
+    // The email backup failed; WhatsApp is still the main way the order arrives.
   }
+  button.disabled = false;
+  button.textContent = "Send order on WhatsApp";
+  if (isBot) return;
+
+  // 3) Tell the customer to tap Send, with a button in case WhatsApp didn't open
+  showWhatsAppConfirmation(message, {
+    name: data.get("name"), phone: data.get("phone"), readyAt, needsCall, waUrl,
+    opened: Boolean(waWindow),
+  });
+  cart = [];
+  renderCart();
+  form.reset();
+}
+
+// ---------- WhatsApp helpers ----------
+function whatsappLink(text) {
+  return `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
+}
+
+function buildWhatsAppText({ name, phone, minutes, readyAt, notes, needsCall }) {
+  const lines = cart.map((l) => {
+    let text = `${l.qty} x ${lineName(l)} - ${money(l.price * l.qty)}`;
+    if (l.sides.length) text += `\n    Sides: ${l.sides.join(", ")}`;
+    return text;
+  });
+  return [
+    `*NEW ORDER - Farro's Kitchen*`,
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Pickup: in ${minutes} minutes (around ${readyAt})`,
+    ``,
+    ...lines,
+    ``,
+    `*TOTAL: ${money(cartTotal())}* (pay at pickup)`,
+    notes ? `Notes: ${notes}` : null,
+    needsCall ? `\n⚠️ Large order: please call me to confirm.` : null,
+  ].filter((l) => l !== null).join("\n");
+}
+
+function showWhatsAppConfirmation(box, { name, phone, readyAt, needsCall, waUrl, opened }) {
+  box.className = "form-message success";
+  box.replaceChildren();
+  const title = document.createElement("strong");
+  title.textContent = opened ? `Almost done, ${name}!` : `One more step, ${name}!`;
+  const text = document.createElement("span");
+  text.textContent = opened
+    ? " WhatsApp opened with your order. Tap Send in WhatsApp to send it to us."
+    : " Tap the button below to send your order to us on WhatsApp.";
+  const extra = document.createElement("span");
+  extra.className = "form-message-extra";
+  extra.textContent = needsCall
+    ? `Because this is a large order, we'll call you at ${phone} to confirm before we start cooking.`
+    : `Your order will be ready around ${readyAt}.`;
+  const link = document.createElement("a");
+  link.className = "btn btn-whatsapp btn-full";
+  link.href = waUrl;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = opened ? "WhatsApp didn't open? Tap here" : "Send order on WhatsApp";
+  box.append(title, text, extra, link);
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // ---------- Hook everything up ----------

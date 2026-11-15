@@ -198,3 +198,13 @@ body {
   font-size: .95rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ===== WHATSAPP ===== */
+.btn-whatsapp { background: #1f9e4b; }
+.btn-whatsapp:hover { background: #17803c; }
+.form-message.success {
+  display: flex; flex-direction: column; gap: 8px;
+  background: #f0fdf4; border: 2px solid #1f9e4b; border-radius: 12px; padding: 14px;
+}
+.form-message-extra { color: var(--text); font-weight: 400; }
+.form-message .btn { text-align: center; margin-top: 4px; }
