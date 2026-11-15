@@ -244,6 +244,20 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .find-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
 @media (max-width: 760px) { .find-grid { grid-template-columns: 1fr; } .map-frame, .map-frame iframe { min-height: 280px; } }
 
+/* ===== PRIVACY POLICY PAGE ===== */
+.policy { max-width: 760px; margin: 0 auto; padding: 28px 18px 8px; }
+.policy-back { display: inline-block; margin-bottom: 18px; color: var(--brand); font-weight: 700; text-decoration: none; }
+.policy-back:hover { text-decoration: underline; }
+.policy h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800; }
+.policy-updated { color: var(--muted); margin: 4px 0 20px; font-size: .95rem; }
+.policy h2 { font-size: 1.3rem; margin: 28px 0 8px; padding-top: 18px; border-top: 1px solid var(--border); }
+.policy p { margin-bottom: 10px; }
+.policy ul { margin: 0 0 10px 22px; }
+.policy li { margin-bottom: 6px; }
+.policy a { color: var(--brand); font-weight: 600; }
+.policy [hidden] { display: none; }
+.form-note a { color: var(--brand); font-weight: 600; }
+
 /* ===== FOOTER ===== */
 .site-footer { margin-top: 64px; background: var(--dark); color: #eadfd5; border-top: 4px solid var(--brand); }
 .footer-grid {

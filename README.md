@@ -113,6 +113,10 @@ The order email to the restaurant is always in English, with a `customer_languag
 
 **The Papiamento text should be checked by a native Aruban speaker** before you rely on it.
 
+## Privacy policy
+
+`privacy.html` explains what personal details the site collects and why, in English, Spanish and Papiamento. It's linked from the footer and the checkout. **If anything changes** (for example online card payment, a new email address, or a different host), update the policy too, and change the "Last updated" date in all three languages.
+
 ## Fake-order protection
 
 The website has these protections built in. Change the numbers at the top of `script.js`:
