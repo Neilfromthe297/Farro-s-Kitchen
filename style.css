@@ -29,7 +29,10 @@
   --font-heading: "Bitter", Georgia, serif;
   --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
-  --header-h: 72px;         /* height of the top bar */
+  --header-h: 72px;         /* height of the top bar while scrolling */
+  --header-h-top: 128px;    /* height of the top bar at the top of the page */
+  --logo-h: 112px;          /* logo size at the top of the page */
+  --logo-h-small: 56px;     /* logo size while scrolling */
   --tabs-h: 60px;           /* height of the sticky category bar */
   --radius: 14px;
   --shadow: 0 1px 2px rgba(36, 22, 18, .06), 0 4px 16px rgba(36, 22, 18, .06);
@@ -75,14 +78,18 @@ a { color: inherit; }
 /* ===== TOP BAR ===== */
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  height: var(--header-h);
+  height: var(--header-h-top);
+  transition: height .2s ease;
   display: flex; align-items: center;
   padding: 0 20px;
   background: var(--dark); color: #fff;
   border-bottom: 3px solid var(--brand);
 }
 .logo { display: block; line-height: 0; }
-.logo img { height: 56px; width: auto; }
+.logo img { height: var(--logo-h); width: auto; transition: height .2s ease; }
+/* Shrink the top bar and logo once the visitor scrolls down */
+body.scrolled .topbar { height: var(--header-h); }
+body.scrolled .logo img { height: var(--logo-h-small); }
 .topnav { display: flex; gap: 22px; margin-left: auto; margin-right: 20px; }
 .topnav a { color: #fff; text-decoration: none; font-weight: 700; }
 .topnav a:hover { color: var(--yellow); }
@@ -243,7 +250,7 @@ a { color: inherit; }
   max-width: 1140px; margin: 0 auto; padding: 44px 20px 28px;
   display: grid; gap: 32px; grid-template-columns: 1.4fr 1fr 1fr 1fr;
 }
-.footer-logo { height: 70px; width: auto; margin-bottom: 12px; }
+.footer-logo { height: 140px; width: auto; margin-bottom: 12px; }
 .footer-brand p { color: #d6c7bb; margin-bottom: 16px; max-width: 280px; }
 .site-footer h3 {
   display: flex; align-items: center; gap: 8px;
@@ -380,10 +387,9 @@ a { color: inherit; }
 
 /* ===== PHONES ===== */
 @media (max-width: 600px) {
-  :root { --header-h: 64px; --tabs-h: 56px; }
+  :root { --header-h: 64px; --header-h-top: 112px; --logo-h: 96px; --logo-h-small: 48px; --tabs-h: 56px; }
   .topbar { padding: 0 12px; }
   .topnav { display: none; }
-  .logo img { height: 48px; }
   .lang-switch { margin-left: auto; margin-right: 8px; }
   .lang-switch button { padding: 6px 8px; }
   .cart-button { padding: 9px 12px; }

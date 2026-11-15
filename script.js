@@ -568,7 +568,17 @@ document.getElementById("menu").addEventListener("click", (e) => {
   highlightTab(tab.dataset.category);
   document.getElementById(`cat-${tab.dataset.category}`).scrollIntoView({ behavior: "smooth" });
 });
-window.addEventListener("scroll", () => requestAnimationFrame(updateActiveTabOnScroll), { passive: true });
+// Big logo at the top of the page, smaller once the visitor scrolls
+function updateHeaderSize() {
+  const y = window.scrollY;
+  if (y > 80) document.body.classList.add("scrolled");
+  else if (y < 10) document.body.classList.remove("scrolled");
+}
+window.addEventListener("scroll", () => requestAnimationFrame(() => {
+  updateHeaderSize();
+  updateActiveTabOnScroll();
+}), { passive: true });
+updateHeaderSize();
 
 document.getElementById("optionsBody").addEventListener("change", () => {
   const counter = document.getElementById("sideCount");
