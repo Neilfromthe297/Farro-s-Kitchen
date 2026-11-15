@@ -25,12 +25,7 @@
   </section>
 
   <!-- ===== CATEGORY TABS ===== -->
-  <nav class="tabs" id="menu">
-    <button class="tab active" data-category="all">All</button>
-    <button class="tab" data-category="chicken">🍗 Chicken</button>
-    <button class="tab" data-category="steak">🥩 Steak</button>
-    <button class="tab" data-category="fish">🐟 Fish</button>
-  </nav>
+  <nav class="tabs" id="menu"></nav>
 
   <!-- ===== MENU (filled in by script.js) ===== -->
   <main class="menu" id="menuList"></main>
@@ -102,6 +97,16 @@
       <p class="form-message" id="formMessage"></p>
     </form>
   </aside>
+
+  <!-- ===== OPTIONS POPUP (choose sides / size) ===== -->
+  <div class="options" id="options" role="dialog" aria-label="Choose options">
+    <div id="optionsBody"></div>
+    <p class="form-message error" id="optionsError"></p>
+    <div class="options-buttons">
+      <button type="button" class="btn btn-light" id="optionsCancel">Cancel</button>
+      <button type="button" class="btn" id="optionsAdd">Add to order</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

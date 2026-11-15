@@ -65,15 +65,19 @@ You can hit **Reply** in your email to answer the customer directly.
 
 ## Step 4: Customize it for your restaurant
 
-- **Menu and prices:** in `script.js`, edit the `MENU` list. Each dish looks like this:
+- **Menu and prices:** in `script.js`, edit the `MENU` list. Prices are in florins (Afl.). A dish looks like this:
   ```js
-  { id: "c1", category: "chicken", name: "Grilled Lemon Herb Chicken", price: 14.99,
-    desc: "Juicy chicken breast ..." },
+  { id: "p1", category: "platters", name: "1/2 Chicken", price: 23.50, img: "images/chicken.jpg" },
   ```
-  To add a dish, copy a line, give it a **new unique id** (for example `c6`), and change the name, price, and description.
-  `category` must be `chicken`, `steak` or `fish`.
+  - To add a dish, copy a line and give it a **new unique id** (for example `p16`).
+  - `category` must be one of: `platters`, `seafood`, `sandwiches`, `sides`, `salads`, `family`.
+  - `sub: "Lomo Saltado"` adds a smaller second name under the dish.
+  - For Small/Large choices use `sizes: { Small: 7.25, Large: 12.00 }` instead of `price`.
+  - Platters automatically ask the customer to choose 2 sides. Add `noSides: true` to skip that.
+  - `callToOrder: true` shows a "Call to order" button instead of "+ Add" (used for the family meals until they have prices).
+  - `img` is optional. Without it, the dish shows an icon instead of a photo.
 - **Address, hours, phone:** in `index.html`, search for `123 Main Street`, `Mon–Sat` and `(555) 123-4567`.
-  Also change the phone number in `script.js` (it appears in the error message).
+  Also change `PHONE` near the top of `script.js` (used for the "Call to order" buttons and the error message).
 - **Pickup time choices:** in `index.html`, edit the `<option>` lines under "I'll pick up in…".
 - **Colors:** at the top of `style.css`, change `--brand` (for example `#15803d` for green).
 - **Big top photo:** in `style.css`, replace the `url("https://images.unsplash.com/...")` with your own photo.
