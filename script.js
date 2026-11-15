@@ -320,6 +320,9 @@ async function submitOrder(event) {
   }
 
   const needsCall = cartTotal() >= CONFIRM_CALL_ABOVE;
+  const pickupMethod = data.get("pickup_method") || "Pickup inside";
+  const isDriveThru = pickupMethod === "Drive-thru";
+  const car = String(data.get("car") || "").trim();
   const minutes = Number(data.get("pickup_minutes"));
   const readyAt = new Date(Date.now() + minutes * 60000)
     .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -334,11 +337,12 @@ async function submitOrder(event) {
   const payload = {
     access_key: WEB3FORMS_ACCESS_KEY,
     from_name: "La Granja Website",
-    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
+    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}NEW ORDER: ${data.get("name")} — ${isDriveThru ? "🚗 DRIVE-THRU" : "pickup inside"} in ${minutes} min (${readyAt})`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
     email: data.get("email"),           // lets you hit "Reply" to answer the customer
     replyto: data.get("email"),
+    pickup_method: isDriveThru ? `🚗 Drive-thru${car ? ` (car: ${car})` : ""}` : "Pickup inside (counter)",
     pickup_in: `${minutes} minutes`,
     pickup_time: readyAt,
     order: orderLines,
@@ -364,7 +368,7 @@ async function submitOrder(event) {
 
     message.textContent = needsCall
       ? `✅ Thank you, ${data.get("name")}! Because this is a large order, we'll call you at ${data.get("phone")} to confirm before we start cooking.`
-      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
+      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}. ${isDriveThru ? "Just drive up to the drive-thru window and give your name." : "Collect it at the counter."}`;
     message.classList.add("success");
     message.scrollIntoView({ behavior: "smooth", block: "center" });
     cart = [];
@@ -416,6 +420,14 @@ document.getElementById("overlay").addEventListener("click", () => { closeOption
 document.getElementById("optionsAdd").addEventListener("click", confirmOptions);
 document.getElementById("optionsCancel").addEventListener("click", closeOptions);
 document.getElementById("orderForm").addEventListener("submit", submitOrder);
+// Show the car field only for drive-thru
+document.getElementById("orderForm").addEventListener("change", (e) => {
+  if (e.target.name !== "pickup_method") return;
+  document.getElementById("carField").hidden = e.target.value !== "Drive-thru";
+});
+document.getElementById("orderForm").addEventListener("reset", () => {
+  document.getElementById("carField").hidden = true;
+});
 document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTabs();

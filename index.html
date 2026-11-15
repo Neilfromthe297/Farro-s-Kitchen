@@ -6,7 +6,7 @@
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja in Oranjestad, Aruba, and pick it up fresh.">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -104,6 +104,18 @@
         <input type="email" name="email" required placeholder="you@example.com">
       </label>
 
+      <fieldset class="pickup-method">
+        <legend>How will you pick up?</legend>
+        <label class="choice"><input type="radio" name="pickup_method" value="Pickup inside" checked>
+          <span>🏠 Pickup inside<br><small>At the counter</small></span></label>
+        <label class="choice"><input type="radio" name="pickup_method" value="Drive-thru">
+          <span>🚗 Drive-thru<br><small>Stay in your car</small></span></label>
+      </fieldset>
+
+      <label class="car-field" id="carField" hidden>Your car (optional)
+        <input type="text" name="car" maxlength="60" placeholder="e.g. White Toyota Yaris">
+      </label>
+
       <label>I'll pick up in…
         <select name="pickup_minutes" required>
           <option value="20">20 minutes</option>
@@ -139,6 +151,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="script.js?v=12"></script>
+  <script src="script.js?v=13"></script>
 </body>
 </html>
