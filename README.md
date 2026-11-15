@@ -1,4 +1,4 @@
-# Farro's Kitchen: Online Ordering Website
+# La Granja: Online Ordering Website
 
 A simple website where customers:
 1. Browse the menu (Chicken, Steak, Fish)

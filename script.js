@@ -333,7 +333,7 @@ async function submitOrder(event) {
 
   const payload = {
     access_key: WEB3FORMS_ACCESS_KEY,
-    from_name: "Farro's Kitchen Website",
+    from_name: "La Granja Website",
     subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
