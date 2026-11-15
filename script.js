@@ -74,6 +74,7 @@ const CATEGORIES = [
   { key: "sides", title: "Side Orders", icon: "cooking-pot" },
   { key: "salads", title: "Salads", icon: "salad" },
   { key: "family", title: "Family Meals", icon: "users", note: "Each family meal serves 4 persons." },
+  { key: "drinks", title: "Drinks", icon: "cup-soda" },
 ];
 
 const MENU = [
@@ -142,6 +143,13 @@ const MENU = [
     desc: "1 whole chicken, 1/2 lb. grilled steak, 1/2 lb. grilled pork, 1 pork ribs. Served with 1 large rice, large potatoes, 2L Coca-Colas and onion sauce." },
   { id: "fm2", img: "images/family-lomito.jpg", category: "family", name: "Family Meal 2", sub: "Bandeja Familiar (Lomito)", callToOrder: true,
     desc: "Served with 1 large rice, 1 large french fries and 2L Coca-Colas." },
+
+  // ---- DRINKS ----
+  { id: "dr1", category: "drinks", name: "Coca-Cola", price: 3.50 },
+  { id: "dr2", category: "drinks", name: "Coca-Cola Zero", price: 3.50 },
+  { id: "dr3", category: "drinks", name: "Sprite", price: 3.50 },
+  { id: "dr4", category: "drinks", name: "Sprite Zero", price: 3.50 },
+  { id: "dr5", category: "drinks", name: "Orange Juice", price: 3.50 },
 ];
 
 
@@ -234,6 +242,43 @@ function updateActiveTabOnScroll() {
   highlightTab(current);
 }
 
+// ---------- Menu search ----------
+// Searches dish names in English, Spanish and Papiamento at once, ignoring accents and capitals
+const normalize = (text) => String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function searchText(item, cat) {
+  const parts = [item.name, item.sub, item.desc];
+  for (const lang of Object.keys(MENU_TRANSLATIONS)) {
+    const tr = MENU_TRANSLATIONS[lang][item.id];
+    if (tr) parts.push(tr.name, tr.sub, tr.desc);
+  }
+  for (const lang of Object.keys(TRANSLATIONS)) parts.push(TRANSLATIONS[lang][`cat_${cat.key}`]);
+  return normalize(parts.filter(Boolean).join(" ")).replace(/"/g, "");
+}
+
+function applySearch() {
+  const input = document.getElementById("menuSearch");
+  const words = normalize(input.value).split(/\s+/).filter(Boolean);
+  document.getElementById("searchClear").hidden = words.length === 0;
+  let found = 0;
+  document.querySelectorAll(".menu-section").forEach((sec) => {
+    let inSection = 0;
+    sec.querySelectorAll(".item").forEach((it) => {
+      const match = words.every((w) => it.dataset.search.includes(w));
+      it.hidden = !match;
+      if (match) inSection++;
+    });
+    sec.hidden = inSection === 0;
+    found += inSection;
+  });
+  const empty = document.getElementById("searchEmpty");
+  empty.hidden = found > 0;
+  empty.textContent = found > 0 ? "" : t("search_none", { q: input.value.trim() });
+  document.querySelectorAll(".tab").forEach((tab) => {
+    const sec = document.getElementById(`cat-${tab.dataset.category}`);
+    tab.hidden = Boolean(sec && sec.hidden);
+  });
+}
+
 function renderMenu() {
   const menuList = document.getElementById("menuList");
   menuList.innerHTML = CATEGORIES
@@ -241,7 +286,7 @@ function renderMenu() {
       const rows = MENU.filter((item) => item.category === cat.key).map((item) => {
         const txt = itemText(item);
         return `
-        <div class="item">
+        <div class="item" data-search="${searchText(item, cat)}">
           ${item.img
             ? `<img class="item-photo" src="${item.img}" alt="${txt.name}" loading="lazy">`
             : `<div class="item-photo item-photo-empty" aria-hidden="true">${icon(cat.icon)}</div>`}
@@ -374,8 +419,80 @@ function renderReceipt() {
     <div class="rc-total"><span>${t("total")}</span><strong>${money(o.total)}</strong></div>
     <p class="rc-pay">${t("rc_pay")}</p>
     <p class="rc-help">${t("rc_help")} <a href="tel:${PHONE.replace(/[^\d+]/g, "")}">${PHONE}</a></p>
+    ${isInstalled() ? "" : `<button type="button" class="install-btn install-btn-light" data-install>${icon("smartphone")} ${t("install_receipt")}</button>`}
     <button type="button" class="btn btn-full" id="newOrderBtn">${t("rc_new")}</button>`;
 }
+
+// ---------- "Would you like a drink?" at checkout ----------
+let drinkQuestion = "open";   // "open" → ask, "answered" → don't ask again for this order
+const hasDrink = () => cart.some((l) => findItem(l.id).category === "drinks");
+const DRINKS = () => MENU.filter((i) => i.category === "drinks");
+
+function renderDrinkAsk() {
+  const box = document.getElementById("drinkAsk");
+  const show = cart.length > 0 && !hasDrink() && drinkQuestion !== "answered";
+  box.hidden = !show;
+  if (!show) return;
+  box.innerHTML = `
+    <div class="drink-ask-head">${icon("cup-soda")}<div><strong>${t("drink_q")}</strong><span>${t("drink_sub")}</span></div></div>
+    <div class="drink-chips">
+      ${DRINKS().map((d) => `<button type="button" class="drink-chip" data-drink="${d.id}">+ ${itemText(d).name} <small>${money(d.price)}</small></button>`).join("")}
+    </div>
+    <button type="button" class="drink-no" id="drinkNo">${t("drink_no")}</button>`;
+}
+
+document.getElementById("drinkAsk").addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-drink]");
+  if (chip) {
+    addToCart(findItem(chip.dataset.drink));
+    drinkQuestion = "answered";
+    renderDrinkAsk();
+    return;
+  }
+  if (e.target.closest("#drinkNo")) {
+    drinkQuestion = "answered";
+    renderDrinkAsk();
+  }
+});
+
+// ---------- "Add to home screen" ----------
+let installPrompt = null;               // Android/Chrome's own install prompt, when offered
+const isInstalled = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+function updateInstallButtons() {
+  document.querySelectorAll("[data-install]").forEach((b) => (b.hidden = isInstalled()));
+}
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; updateInstallButtons(); });
+window.addEventListener("appinstalled", () => { installPrompt = null; updateInstallButtons(); });
+
+async function startInstall() {
+  if (installPrompt) {                   // Android / Chrome: show the phone's own "Install" window
+    installPrompt.prompt();
+    await installPrompt.userChoice.catch(() => null);
+    installPrompt = null;
+    return;
+  }
+  const steps = isIOS()
+    ? [t("install_ios_1"), t("install_ios_2"), t("install_ios_3")]
+    : [t("install_and_1"), t("install_and_2"), t("install_and_3")];
+  const icons = isIOS() ? ["share", "square-plus", "plus"] : ["ellipsis-vertical", "smartphone", "plus"];
+  document.getElementById("installSteps").innerHTML =
+    steps.map((s, i) => `<li>${icon(icons[i])}<span>${s}</span></li>`).join("");
+  document.getElementById("installSheet").hidden = false;
+  pushPanel("install");
+}
+function closeInstall(fromBackButton = false) {
+  const sheet = document.getElementById("installSheet");
+  if (sheet.hidden) return;
+  sheet.hidden = true;
+  if (!fromBackButton) popPanel("install");
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-install]")) startInstall(); });
+document.getElementById("installClose").addEventListener("click", () => closeInstall());
+document.getElementById("installSheet").addEventListener("click", (e) => {
+  if (e.target.id === "installSheet") closeInstall();
+});
 
 // ---------- Phone helpers ----------
 const isCartOpen = () => document.getElementById("cart").classList.contains("open");
@@ -393,7 +510,8 @@ function popPanel(name) {
   if (history.state?.panel === name) history.back();
 }
 window.addEventListener("popstate", () => {
-  if (optionsItem) closeOptions(true);
+  if (!document.getElementById("installSheet").hidden) closeInstall(true);
+  else if (optionsItem) closeOptions(true);
   else if (isCartOpen()) closeCart(true);
 });
 
@@ -526,6 +644,7 @@ function renderCart() {
   const count = cart.reduce((a, l) => a + l.qty, 0);
   document.getElementById("cartCount").textContent = count;
   renderTotals();
+  renderDrinkAsk();
   updateOrderBar();
   renderReceipt();
 }
@@ -754,6 +873,15 @@ async function submitOrder(event) {
   };
 
   if (cart.length === 0) return fail(t("err_empty"));
+  if (!hasDrink() && drinkQuestion === "open") {
+    // Ask one more time before sending the order
+    drinkQuestion = "asked-again";
+    const box = document.getElementById("drinkAsk");
+    box.hidden = false;
+    box.classList.remove("nudge"); void box.offsetWidth; box.classList.add("nudge");
+    box.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
   if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_ACCESS_KEY")) {
     return fail("Setup needed: paste your Web3Forms access key at the top of script.js.");
   }
@@ -836,6 +964,7 @@ async function submitOrder(event) {
     });
     setMessage(message, "", "");
     cart = [];
+    drinkQuestion = "open";
     removePromo();
     renderCart();
     form.reset();
@@ -895,6 +1024,17 @@ document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
 document.getElementById("orderBar").addEventListener("click", openCart);
 document.getElementById("promoApply").addEventListener("click", applyPromo);
+document.getElementById("menuSearch").addEventListener("input", applySearch);
+document.getElementById("menuSearch").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); e.target.blur(); document.getElementById("menu").scrollIntoView({ behavior: "smooth" }); }
+});
+document.getElementById("searchClear").addEventListener("click", () => {
+  const input = document.getElementById("menuSearch");
+  input.value = "";
+  applySearch();
+  input.focus();
+});
+updateInstallButtons();
 document.getElementById("promoInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter") { e.preventDefault(); applyPromo(); }
 });
@@ -968,6 +1108,7 @@ document.addEventListener("languagechange", () => {
   if (optionsItem) closeOptions();
   renderTabs();
   renderMenu();
+  applySearch();
   renderCart();
   updateOpeningStatus();
   const btn = document.getElementById("submitBtn");

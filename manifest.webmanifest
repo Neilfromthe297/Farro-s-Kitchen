@@ -1,0 +1,15 @@
+{
+  "name": "La Granja – Order Online",
+  "short_name": "La Granja",
+  "description": "Order chicken, steak, seafood and more from La Granja in Oranjestad, Aruba, for pickup or drive-thru.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fffbf5",
+  "theme_color": "#241612",
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

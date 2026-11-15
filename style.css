@@ -191,6 +191,28 @@ body.scrolled .logo img { height: var(--logo-h-small); }
   .cd-sep { font-size: 1.6rem; padding-top: 6px; }
 }
 
+/* ===== MENU SEARCH ===== */
+.search-wrap { max-width: 1140px; margin: 0 auto; padding: 18px 16px 0; }
+.search {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid var(--border); border-radius: 999px;
+  padding: 4px 6px 4px 16px; box-shadow: var(--shadow); cursor: text;
+}
+.search:focus-within { border-color: var(--brand); outline: 2px solid var(--peach); }
+.search > .icon { color: var(--brand); width: 20px; height: 20px; }
+.search input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: none;
+  font-family: inherit; font-size: 1rem; padding: 10px 0; color: var(--text);
+}
+.search input::-webkit-search-cancel-button { display: none; }
+.search-clear {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%; border: 0; background: #f5ede6; color: var(--text); cursor: pointer;
+}
+.search-clear[hidden] { display: none; }
+.search-empty { max-width: 1140px; margin: 24px auto 0; padding: 0 16px; color: var(--muted); font-weight: 600; text-align: center; }
+.search-empty[hidden], .menu-section[hidden], .item[hidden], .tab[hidden] { display: none; }
+
 /* ===== STICKY CATEGORY BAR ===== */
 .tabs {
   position: sticky; top: var(--header-h); z-index: 15;
@@ -377,6 +399,60 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .qty button:hover { border-color: var(--brand); color: var(--brand); }
 .cart-total { display: flex; justify-content: space-between; font-size: 1.25rem; padding: 16px 0; }
 .cart-total strong { font-family: var(--font-heading); }
+
+/* ===== "WOULD YOU LIKE A DRINK?" ===== */
+.drink-ask {
+  margin-top: 14px; padding: 14px; border-radius: 14px;
+  background: var(--cream); border: 1px solid var(--peach);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.drink-ask[hidden] { display: none; }
+.drink-ask-head { display: flex; gap: 10px; align-items: center; }
+.drink-ask-head .icon { width: 30px; height: 30px; color: var(--brand); flex-shrink: 0; }
+.drink-ask-head strong { display: block; font-size: 1.05rem; }
+.drink-ask-head span { color: var(--muted); font-size: .9rem; }
+.drink-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.drink-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--brand);
+  background: #fff; color: var(--brand); font-family: inherit; font-weight: 700; font-size: .9rem; cursor: pointer;
+}
+.drink-chip small { color: var(--muted); font-weight: 600; }
+.drink-chip:hover { background: var(--brand); color: #fff; }
+.drink-chip:hover small { color: #ffe1d6; }
+.drink-no { align-self: flex-start; background: none; border: 0; color: var(--muted); text-decoration: underline; font: inherit; cursor: pointer; padding: 4px 0; }
+.drink-ask.nudge { animation: nudge .6s ease 2; border-color: var(--brand); }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.cart.showing-receipt .drink-ask { display: none; }
+
+/* ===== ADD TO HOME SCREEN ===== */
+.install-btn {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+  padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3);
+  background: transparent; color: #fff; font-family: inherit; font-weight: 700; cursor: pointer;
+}
+.install-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+.install-btn[hidden] { display: none; }
+.install-btn-light { margin-top: 0; justify-content: center; border-color: var(--border); color: var(--text); background: #fff; border-radius: 12px; text-align: left; }
+.install-btn-light:hover { border-color: var(--brand); color: var(--brand); }
+.install-btn-light .icon { color: var(--brand); flex-shrink: 0; }
+.install-sheet {
+  position: fixed; inset: 0; z-index: 70; background: rgba(36,22,18,.55);
+  display: flex; align-items: flex-end; justify-content: center; padding: 16px;
+}
+.install-sheet[hidden] { display: none; }
+.install-box {
+  background: #fff; border-radius: 20px; padding: 24px; width: min(440px, 100%);
+  margin-bottom: env(safe-area-inset-bottom); text-align: center;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.install-icon { width: 72px; height: 72px; border-radius: 18px; margin: 0 auto; box-shadow: var(--shadow); }
+.install-box h3 { font-size: 1.35rem; }
+.install-box > p { color: var(--muted); }
+.install-steps { list-style: none; text-align: left; display: flex; flex-direction: column; gap: 10px; margin: 4px 0; counter-reset: step; }
+.install-steps li { display: flex; gap: 12px; align-items: flex-start; background: var(--cream); border-radius: 12px; padding: 12px; }
+.install-steps .icon { width: 22px; height: 22px; color: var(--brand); flex-shrink: 0; margin-top: 1px; }
+@media (min-width: 700px) { .install-sheet { align-items: center; } }
 
 /* ===== PROMO CODE & TOTALS ===== */
 .promo { padding: 14px 0 4px; display: flex; flex-direction: column; gap: 6px; }

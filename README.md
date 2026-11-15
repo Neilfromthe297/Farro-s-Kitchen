@@ -119,6 +119,12 @@ The order email to the restaurant is always in English, with a `customer_languag
 
 `privacy.html` explains what personal details the site collects and why, in English, Spanish and Papiamento. It's linked from the footer and the checkout. **If anything changes** (for example online card payment, a new email address, or a different host), update the policy too, and change the "Last updated" date in all three languages.
 
+## Drinks, search and "Add to home screen"
+
+- **Drinks** are a normal menu section (`category: "drinks"` in `script.js`). If an order has no drink, checkout asks "Would you like a drink?" with one-tap buttons, and asks once more when the customer taps Place order.
+- **Search** (above the menu) finds dishes by name in English, Spanish and Papiamento.
+- **Add to home screen:** `manifest.webmanifest` and the `images/icon-*.png` files make the site installable like an app. The button in the footer and on the receipt shows the steps for iPhone or Android.
+
 ## Pickup times and pre-orders
 
 Set at the top of `script.js`:
