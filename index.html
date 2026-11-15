@@ -6,9 +6,35 @@
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/bitter-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
+  <!-- Icons: Lucide v0.460.0 (https://lucide.dev), ISC License.
+       Copyright (c) Cole Bemis 2013-2022 (Feather, MIT) and Lucide Contributors 2022.
+       Permission to use, copy, modify, and/or distribute this software for any purpose
+       with or without fee is hereby granted, provided that the above copyright notice
+       and this permission notice appear in all copies. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /> <path d="M3 6h18" /> <path d="M16 10a4 4 0 0 1-8 0" /></symbol>
+    <symbol id="i-drumstick" viewBox="0 0 24 24"><path d="M15.4 15.63a7.875 6 135 1 1 6.23-6.23 4.5 3.43 135 0 0-6.23 6.23" /> <path d="m8.29 12.71-2.6 2.6a2.5 2.5 0 1 0-1.65 4.65A2.5 2.5 0 1 0 8.7 18.3l2.59-2.59" /></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" /> <path d="M18 12v.5" /> <path d="M16 17.93a9.77 9.77 0 0 1 0-11.86" /> <path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33" /> <path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4" /> <path d="m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98" /></symbol>
+    <symbol id="i-sandwich" viewBox="0 0 24 24"><path d="m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777" /> <path d="M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25" /> <path d="M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9" /> <path d="m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2" /> <rect width="20" height="4" x="2" y="11" rx="1" /></symbol>
+    <symbol id="i-cooking-pot" viewBox="0 0 24 24"><path d="M2 12h20" /> <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /> <path d="m4 8 16-4" /> <path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8" /></symbol>
+    <symbol id="i-salad" viewBox="0 0 24 24"><path d="M7 21h10" /> <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z" /> <path d="M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1" /> <path d="m13 12 4-4" /> <path d="M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2" /></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+    <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></symbol>
+    <symbol id="i-navigation" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11" /></symbol>
+    <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /> <circle cx="7" cy="17" r="2" /> <path d="M9 17h6" /> <circle cx="17" cy="17" r="2" /></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></symbol>
+    <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" /></symbol>
+    <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></symbol>
+    <symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <line x1="12" x2="12" y1="8" y2="12" /> <line x1="12" x2="12.01" y1="16" y2="16" /></symbol>
+  </svg>
 
   <!-- ===== TOP BAR ===== -->
   <header class="topbar">
@@ -23,7 +49,7 @@
       <button type="button" data-lang="pap" lang="pap">PAP</button>
     </div>
     <button class="cart-button" id="openCart" aria-label="Open cart" data-i18n-aria="cart">
-      🛒 <span data-i18n="cart">Cart</span> <span class="cart-count" id="cartCount">0</span>
+      <svg class="icon" aria-hidden="true"><use href="#i-shopping-bag"/></svg> <span class="cart-label" data-i18n="cart">Cart</span> <span class="cart-count" id="cartCount">0</span>
     </button>
   </header>
 
@@ -36,10 +62,13 @@
   </section>
 
   <!-- ===== CATEGORY TABS ===== -->
-  <nav class="tabs" id="menu"></nav>
+  <!-- The category bar only sticks while scrolling through the menu -->
+  <div class="menu-wrap">
+    <nav class="tabs" id="menu"></nav>
 
-  <!-- ===== MENU (filled in by script.js) ===== -->
-  <main class="menu" id="menuList"></main>
+    <!-- ===== MENU (filled in by script.js) ===== -->
+    <main class="menu" id="menuList"></main>
+  </div>
 
   <!-- ===== INFO ===== -->
   <!-- ===== ABOUT ===== -->
@@ -61,30 +90,44 @@
     </div>
   </section>
 
-  <section class="info">
-    <div>
-      <h3 data-i18n="info_location">📍 Location</h3>
-      <p>Zandstraat 2<br>Oranjestad, Aruba</p>
-      <a class="info-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Granja+Zandstraat+2+Oranjestad+Aruba" target="_blank" rel="noopener" data-i18n="info_directions">Get directions →</a>
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer" id="contact">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="La Granja" class="footer-logo">
+        <p data-i18n="footer_tagline">Homestyle Latin American food, served fast.</p>
+        <a href="#menu" class="btn btn-yellow" data-i18n="about_cta">Order online</a>
+      </div>
+      <div>
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg> <span data-i18n="info_location">Location</span></h3>
+        <p>Zandstraat 2<br>Oranjestad, Aruba</p>
+        <a class="footer-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Granja+Zandstraat+2+Oranjestad+Aruba" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-navigation"/></svg> <span data-i18n="info_directions">Get directions</span></a>
+      </div>
+      <div>
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> <span data-i18n="info_hours">Hours</span></h3>
+        <p><span data-i18n="info_every_day">Every day</span><br>11:00 AM – 9:00 PM</p>
+      </div>
+      <div>
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> <span data-i18n="info_call">Call us</span></h3>
+        <p><a class="footer-link" href="tel:+2975691341">+297 569 1341</a></p>
+        <nav class="footer-nav">
+          <a href="#menu" data-i18n="nav_menu">Menu</a>
+          <a href="#about" data-i18n="nav_about">About</a>
+        </nav>
+      </div>
     </div>
-    <div>
-      <h3 data-i18n="info_hours">🕒 Hours</h3>
-      <p><span data-i18n="info_every_day">Every day</span><br>11:00 AM – 9:00 PM</p>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> La Granja · <span data-i18n="footer_pickup">Pickup only. Pay when you pick up.</span></span>
+      <span><span data-i18n="footer_photos">Food photos from</span> <a href="https://unsplash.com">Unsplash</a> · <span data-i18n="footer_icons">Icons by</span> <a href="https://lucide.dev">Lucide</a></span>
     </div>
-    <div>
-      <h3 data-i18n="info_call">📞 Call us</h3>
-      <p><a href="tel:+2975691341">+297 569 1341</a></p>
-    </div>
-  </section>
-
-  <footer class="footer">© <span id="year"></span> La Granja. <span data-i18n="footer_pickup">Pickup only. Pay when you pick up.</span><br><span data-i18n="footer_photos">Food photos from</span> <a href="https://unsplash.com">Unsplash</a>.</footer>
+  </footer>
 
   <!-- ===== CART DRAWER ===== -->
   <div class="overlay" id="overlay"></div>
   <aside class="cart" id="cart" aria-label="Your order">
     <div class="cart-header">
       <h2 data-i18n="cart_title">Your Order</h2>
-      <button class="close" id="closeCart" aria-label="Close cart" data-i18n-aria="close">✕</button>
+      <button class="close" id="closeCart" aria-label="Close cart" data-i18n-aria="close"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
 
     <div id="cartItems" class="cart-items"></div>
@@ -115,9 +158,9 @@
       <fieldset class="pickup-method">
         <legend data-i18n="how_pickup">How will you pick up?</legend>
         <label class="choice"><input type="radio" name="pickup_method" value="Pickup inside" checked>
-          <span><span data-i18n="pickup_inside">🏠 Pickup inside</span><br><small data-i18n="pickup_inside_sub">At the counter</small></span></label>
+          <span><span class="pm-title"><svg class="icon" aria-hidden="true"><use href="#i-house"/></svg> <span data-i18n="pickup_inside">Pickup inside</span></span><br><small data-i18n="pickup_inside_sub">At the counter</small></span></label>
         <label class="choice"><input type="radio" name="pickup_method" value="Drive-thru">
-          <span><span data-i18n="drive_thru">🚗 Drive-thru</span><br><small data-i18n="drive_thru_sub">Stay in your car</small></span></label>
+          <span><span class="pm-title"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg> <span data-i18n="drive_thru">Drive-thru</span></span><br><small data-i18n="drive_thru_sub">Stay in your car</small></span></label>
       </fieldset>
 
       <label class="car-field" id="carField" hidden><span data-i18n="car_label">Your car (optional)</span>
@@ -159,7 +202,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="i18n.js?v=15"></script>
-  <script src="script.js?v=15"></script>
+  <script src="i18n.js?v=17"></script>
+  <script src="script.js?v=17"></script>
 </body>
 </html>

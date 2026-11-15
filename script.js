@@ -53,13 +53,13 @@ const CONFIRM_CALL_ABOVE = 150;
 const PLATTER_SIDES = ["Rice", "Onion Potatoes", "French Fries", "Salad"];
 
 const CATEGORIES = [
-  { key: "platters", title: "Platters", icon: "🍗", sides: 2,
+  { key: "platters", title: "Platters", icon: "drumstick", sides: 2,
     note: "Served with 2 side orders of your choice: rice, onion potatoes, french fries or salad." },
-  { key: "seafood", title: "Seafood", icon: "🦐" },
-  { key: "sandwiches", title: "Sandwiches", icon: "🥪", note: "Served with french fries." },
-  { key: "sides", title: "Side Orders", icon: "🍟" },
-  { key: "salads", title: "Salads", icon: "🥗" },
-  { key: "family", title: "Family Meals", icon: "👨‍👩‍👧‍👦", note: "Each family meal serves 4 persons." },
+  { key: "seafood", title: "Seafood", icon: "fish" },
+  { key: "sandwiches", title: "Sandwiches", icon: "sandwich", note: "Served with french fries." },
+  { key: "sides", title: "Side Orders", icon: "cooking-pot" },
+  { key: "salads", title: "Salads", icon: "salad" },
+  { key: "family", title: "Family Meals", icon: "users", note: "Each family meal serves 4 persons." },
 ];
 
 const MENU = [
@@ -171,19 +171,58 @@ function lineName(line, forEmail = false) {
 }
 
 // ---------- Tabs & menu ----------
-let activeCategory = "all";
+// Icon from the icon set at the top of index.html
+const icon = (name) => `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+
+// Show a message with an icon (type: "success" | "error" | "")
+function setMessage(el, type, text) {
+  el.className = `form-message${type ? " " + type : ""}`;
+  el.replaceChildren();
+  if (!text) return;
+  if (type) el.insertAdjacentHTML("beforeend", icon(type === "success" ? "circle-check" : "circle-x"));
+  const span = document.createElement("span");
+  span.textContent = text;
+  el.append(span);
+}
+
+// ---------- Sticky category bar ----------
+// Tapping a category scrolls to it; the bar highlights the section on screen.
+let activeCategory = CATEGORIES[0].key;
 
 function renderTabs() {
   const tabs = document.getElementById("menu");
-  const tab = (key, label) =>
-    `<button class="tab${key === activeCategory ? " active" : ""}" data-category="${key}">${label}</button>`;
-  tabs.innerHTML = tab("all", t("tab_all")) + CATEGORIES.map((c) => tab(c.key, `${c.icon} ${catTitle(c)}`)).join("");
+  tabs.innerHTML = CATEGORIES.map((c) =>
+    `<button class="tab${c.key === activeCategory ? " active" : ""}" data-category="${c.key}">${icon(c.icon)} ${catTitle(c)}</button>`
+  ).join("");
 }
 
-function renderMenu(filter = activeCategory) {
+function highlightTab(key) {
+  if (key === activeCategory) return;
+  activeCategory = key;
+  document.querySelectorAll(".tab").forEach((el) => {
+    const on = el.dataset.category === key;
+    el.classList.toggle("active", on);
+    if (on) {
+      // Slide the bar sideways so the active tab is visible (never scrolls the page)
+      const bar = el.parentElement;
+      bar.scrollTo({ left: el.offsetLeft - (bar.clientWidth - el.offsetWidth) / 2, behavior: "smooth" });
+    }
+  });
+}
+
+// Which menu section is just below the sticky bars?
+function updateActiveTabOnScroll() {
+  const offset = document.getElementById("menu").getBoundingClientRect().bottom + 40;
+  let current = CATEGORIES[0].key;
+  document.querySelectorAll(".menu-section").forEach((sec) => {
+    if (sec.getBoundingClientRect().top <= offset) current = sec.dataset.category;
+  });
+  highlightTab(current);
+}
+
+function renderMenu() {
   const menuList = document.getElementById("menuList");
   menuList.innerHTML = CATEGORIES
-    .filter((c) => filter === "all" || filter === c.key)
     .map((cat) => {
       const rows = MENU.filter((item) => item.category === cat.key).map((item) => {
         const txt = itemText(item);
@@ -191,7 +230,7 @@ function renderMenu(filter = activeCategory) {
         <div class="item">
           ${item.img
             ? `<img class="item-photo" src="${item.img}" alt="${txt.name}" loading="lazy">`
-            : `<div class="item-photo item-photo-empty" aria-hidden="true">${cat.icon}</div>`}
+            : `<div class="item-photo item-photo-empty" aria-hidden="true">${icon(cat.icon)}</div>`}
           <div class="item-info">
             <h4>${txt.name}</h4>
             ${txt.sub ? `<div class="item-sub">${txt.sub}</div>` : ""}
@@ -199,14 +238,14 @@ function renderMenu(filter = activeCategory) {
             <div class="item-bottom">
               <span class="price">${priceLabel(item)}</span>
               ${item.callToOrder
-                ? `<a class="add-btn call-btn" href="tel:${PHONE.replace(/[^\d+]/g, "")}">${t("call_to_order")}</a>`
+                ? `<a class="add-btn call-btn" href="tel:${PHONE.replace(/[^\d+]/g, "")}">${icon("phone")} ${t("call_to_order")}</a>`
                 : `<button class="add-btn" data-id="${item.id}">${t("add")}</button>`}
             </div>
           </div>
         </div>`;
       }).join("");
-      return `<section>
-        <h2 class="category-title">${cat.icon} ${catTitle(cat)}</h2>
+      return `<section class="menu-section" id="cat-${cat.key}" data-category="${cat.key}">
+        <h2 class="category-title">${icon(cat.icon)} ${catTitle(cat)}</h2>
         ${catNote(cat) ? `<p class="category-note">${catNote(cat)}</p>` : ""}
         <div class="grid">${rows}</div>
       </section>`;
@@ -400,9 +439,10 @@ function updateOpeningStatus() {
   const canOrder = open && firstValid !== null;
   const notice = document.getElementById("closedNotice");
   notice.hidden = canOrder;
-  notice.textContent = open
-    ? t("closing_soon", { phone: PHONE })
-    : closedMessage();
+  notice.innerHTML = icon("circle-alert");
+  notice.append(Object.assign(document.createElement("span"), {
+    textContent: open ? t("closing_soon", { phone: PHONE }) : closedMessage(),
+  }));
   document.getElementById("submitBtn").disabled = !canOrder;
 }
 
@@ -423,11 +463,10 @@ async function submitOrder(event) {
   const message = document.getElementById("formMessage");
   const button = document.getElementById("submitBtn");
   message.className = "form-message";
-  message.textContent = "";
+  setMessage(message, "", "");
 
   const fail = (text) => {
-    message.textContent = text;
-    message.classList.add("error");
+    setMessage(message, "error", text);
   };
 
   if (cart.length === 0) return fail(t("err_empty"));
@@ -497,10 +536,9 @@ async function submitOrder(event) {
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
-    message.textContent = needsCall
+    setMessage(message, "success", needsCall
       ? t("ok_large", { name: data.get("name"), phone: data.get("phone") })
-      : `${t("ok_ready", { name: data.get("name"), time: readyAt })} ${t(isDriveThru ? "ok_drive" : "ok_inside")}`;
-    message.classList.add("success");
+      : `${t("ok_ready", { name: data.get("name"), time: readyAt })} ${t(isDriveThru ? "ok_drive" : "ok_inside")}`);
     message.scrollIntoView({ behavior: "smooth", block: "center" });
     cart = [];
     renderCart();
@@ -527,11 +565,10 @@ document.getElementById("menuList").addEventListener("click", (e) => {
 document.getElementById("menu").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
   if (!tab) return;
-  document.querySelectorAll(".tab").forEach((el) => el.classList.remove("active"));
-  tab.classList.add("active");
-  activeCategory = tab.dataset.category;
-  renderMenu();
+  highlightTab(tab.dataset.category);
+  document.getElementById(`cat-${tab.dataset.category}`).scrollIntoView({ behavior: "smooth" });
 });
+window.addEventListener("scroll", () => requestAnimationFrame(updateActiveTabOnScroll), { passive: true });
 
 document.getElementById("optionsBody").addEventListener("change", () => {
   const counter = document.getElementById("sideCount");
