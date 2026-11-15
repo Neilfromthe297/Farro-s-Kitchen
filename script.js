@@ -778,13 +778,32 @@ function animateChicken() {
 setTimeout(animateChicken, 1500);        // first time shortly after the page opens
 setInterval(animateChicken, CHICKEN_EVERY);
 
-// Tapping the logo refreshes the page and starts at the top
+// Tapping the logo refreshes the page and starts at the top.
+// Works the same in every browser (Safari, Chrome, Samsung Internet...):
+// 1. remove "#menu" / "#about" from the address so the browser doesn't jump there,
+// 2. leave a note so the reloaded page forces itself to the very top.
 document.getElementById("logoLink").addEventListener("click", (e) => {
   e.preventDefault();
+  try { sessionStorage.setItem("logoRefresh", "1"); } catch (err) { /* ignore */ }
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-  window.scrollTo(0, 0);
+  history.replaceState(null, "", location.pathname + location.search);
   location.reload();
 });
+
+// After a logo refresh: start at the top, even if the browser remembered a position
+(function startAtTopAfterLogoRefresh() {
+  let fromLogo = false;
+  try {
+    fromLogo = sessionStorage.getItem("logoRefresh") === "1";
+    sessionStorage.removeItem("logoRefresh");
+  } catch (err) { /* ignore */ }
+  if (!fromLogo) return;
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  toTop();
+  requestAnimationFrame(toTop);
+  window.addEventListener("load", () => { toTop(); setTimeout(toTop, 100); }, { once: true });
+})();
 document.getElementById("receipt").addEventListener("click", (e) => {
   if (!e.target.closest("#newOrderBtn")) return;
   clearLastOrder();
