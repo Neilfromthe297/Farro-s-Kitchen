@@ -707,9 +707,10 @@ function updateOpeningStatus() {
   const select = document.getElementById("pickupMinutes");
   const { mode, choices } = pickupChoices();
   const previous = select.value;
-  select.replaceChildren(...choices.map((c) => new Option(c.label, c.value)));
-  if (choices.some((c) => c.value === previous)) select.value = previous;
-  else if (mode === "now" && choices.some((c) => c.value === "now:30")) select.value = "now:30";
+  // Default choice (also used when the form is cleared after an order): 30 minutes, or the earliest time
+  const fallback = choices.some((c) => c.value === "now:30") ? "now:30" : choices[0]?.value;
+  select.replaceChildren(...choices.map((c) => new Option(c.label, c.value, c.value === fallback, false)));
+  select.value = choices.some((c) => c.value === previous) ? previous : (fallback || "");
   document.getElementById("pickupLabel").textContent = t(mode === "pre" ? "pickup_when" : "pickup_in");
 
   const notice = document.getElementById("closedNotice");
