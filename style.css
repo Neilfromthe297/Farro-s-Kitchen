@@ -242,3 +242,21 @@ body {
 }
 .closed-notice[hidden] { display: none; }
 .info-link { color: var(--brand); font-weight: 700; text-decoration: none; display: inline-block; margin-top: 6px; }
+
+/* ===== LANGUAGE SWITCH ===== */
+.lang-switch {
+  display: flex; border: 1px solid rgba(255,255,255,.35); border-radius: 999px;
+  overflow: hidden; margin-right: 12px; flex-shrink: 0;
+}
+.lang-switch button {
+  background: none; border: 0; color: #fff; font-weight: 700; font-size: .8rem;
+  padding: 7px 10px; cursor: pointer;
+}
+.lang-switch button[aria-pressed="true"] { background: #fff; color: var(--dark); }
+@media (max-width: 600px) {
+  .topnav { display: none; }
+  .lang-switch { margin-left: auto; margin-right: 8px; }
+  .lang-switch button { padding: 6px 8px; }
+  .logo img { height: 48px; }
+  .cart-button { padding: 9px 12px; }
+}

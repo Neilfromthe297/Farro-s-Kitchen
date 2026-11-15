@@ -144,51 +144,70 @@ const findCategory = (key) => CATEGORIES.find((c) => c.key === key);
 const needsSides = (item) => findCategory(item.category).sides && !item.noSides;
 const hasOptions = (item) => item.sizes || needsSides(item);
 
+// Dish name / second name / description in the chosen language (see i18n.js)
+function itemText(item) {
+  const tr = MENU_TRANSLATIONS[currentLang]?.[item.id];
+  return {
+    name: tr?.name ?? item.name,
+    sub: tr ? (tr.sub ?? (tr.name ? null : item.sub)) : item.sub,
+    desc: tr?.desc ?? item.desc,
+  };
+}
+const catTitle = (cat) => t(`cat_${cat.key}`);
+const catNote = (cat) => (cat.note ? t(`note_${cat.key}`) : "");
+
 function priceLabel(item) {
-  if (item.callToOrder) return "Call for price";
-  if (item.sizes) return Object.entries(item.sizes).map(([s, p]) => `${s[0]} ${money(p)}`).join(" · ");
+  if (item.callToOrder) return t("call_for_price");
+  if (item.sizes) return Object.entries(item.sizes).map(([s, p]) => `${t(`size_short_${s}`)} ${money(p)}`).join(" · ");
   return money(item.price);
 }
 
-function lineName(line) {
+// forEmail = true: always English, so the kitchen gets the same wording
+function lineName(line, forEmail = false) {
   const item = findItem(line.id);
-  let name = item.name;
-  if (line.size) name += ` (${line.size})`;
+  let name = forEmail ? item.name : itemText(item).name;
+  if (line.size) name += ` (${forEmail ? line.size : t(`size_${line.size}`)})`;
   return name;
 }
 
 // ---------- Tabs & menu ----------
+let activeCategory = "all";
+
 function renderTabs() {
   const tabs = document.getElementById("menu");
-  tabs.innerHTML = `<button class="tab active" data-category="all">All</button>` +
-    CATEGORIES.map((c) => `<button class="tab" data-category="${c.key}">${c.icon} ${c.title}</button>`).join("");
+  const tab = (key, label) =>
+    `<button class="tab${key === activeCategory ? " active" : ""}" data-category="${key}">${label}</button>`;
+  tabs.innerHTML = tab("all", t("tab_all")) + CATEGORIES.map((c) => tab(c.key, `${c.icon} ${catTitle(c)}`)).join("");
 }
 
-function renderMenu(filter = "all") {
+function renderMenu(filter = activeCategory) {
   const menuList = document.getElementById("menuList");
   menuList.innerHTML = CATEGORIES
     .filter((c) => filter === "all" || filter === c.key)
     .map((cat) => {
-      const rows = MENU.filter((item) => item.category === cat.key).map((item) => `
+      const rows = MENU.filter((item) => item.category === cat.key).map((item) => {
+        const txt = itemText(item);
+        return `
         <div class="item">
           ${item.img
-            ? `<img class="item-photo" src="${item.img}" alt="${item.name}" loading="lazy">`
+            ? `<img class="item-photo" src="${item.img}" alt="${txt.name}" loading="lazy">`
             : `<div class="item-photo item-photo-empty" aria-hidden="true">${cat.icon}</div>`}
           <div class="item-info">
-            <h4>${item.name}</h4>
-            ${item.sub ? `<div class="item-sub">${item.sub}</div>` : ""}
-            ${item.desc ? `<p>${item.desc}</p>` : ""}
+            <h4>${txt.name}</h4>
+            ${txt.sub ? `<div class="item-sub">${txt.sub}</div>` : ""}
+            ${txt.desc ? `<p>${txt.desc}</p>` : ""}
             <div class="item-bottom">
               <span class="price">${priceLabel(item)}</span>
               ${item.callToOrder
-                ? `<a class="add-btn call-btn" href="tel:${PHONE.replace(/[^\d+]/g, "")}">📞 Call to order</a>`
-                : `<button class="add-btn" data-id="${item.id}">+ Add</button>`}
+                ? `<a class="add-btn call-btn" href="tel:${PHONE.replace(/[^\d+]/g, "")}">${t("call_to_order")}</a>`
+                : `<button class="add-btn" data-id="${item.id}">${t("add")}</button>`}
             </div>
           </div>
-        </div>`).join("");
+        </div>`;
+      }).join("");
       return `<section>
-        <h2 class="category-title">${cat.icon} ${cat.title}</h2>
-        ${cat.note ? `<p class="category-note">${cat.note}</p>` : ""}
+        <h2 class="category-title">${cat.icon} ${catTitle(cat)}</h2>
+        ${catNote(cat) ? `<p class="category-note">${catNote(cat)}</p>` : ""}
         <div class="grid">${rows}</div>
       </section>`;
     }).join("");
@@ -200,19 +219,19 @@ let optionsItem = null;
 function openOptions(item) {
   optionsItem = item;
   const body = document.getElementById("optionsBody");
-  let html = `<h3>${item.name}</h3>`;
+  let html = `<h3>${itemText(item).name}</h3>`;
   if (item.sizes) {
-    html += `<fieldset><legend>Choose a size</legend>` +
+    html += `<fieldset><legend>${t("opt_size")}</legend>` +
       Object.entries(item.sizes).map(([size, p], i) => `
         <label class="choice"><input type="radio" name="size" value="${size}" ${i === 0 ? "checked" : ""}>
-          <span>${size}</span><span class="choice-price">${money(p)}</span></label>`).join("") +
+          <span>${t(`size_${size}`)}</span><span class="choice-price">${money(p)}</span></label>`).join("") +
       `</fieldset>`;
   }
   if (needsSides(item)) {
     const count = findCategory(item.category).sides;
-    html += `<fieldset><legend>Choose ${count} sides <span id="sideCount">(0 of ${count})</span></legend>` +
+    html += `<fieldset><legend>${t("opt_sides", { n: count })} <span id="sideCount">${t("opt_count", { c: 0, n: count })}</span></legend>` +
       PLATTER_SIDES.map((s) => `
-        <label class="choice"><input type="checkbox" name="side" value="${s}"><span>${s}</span></label>`).join("") +
+        <label class="choice"><input type="checkbox" name="side" value="${s}"><span>${t(`side_${s}`)}</span></label>`).join("") +
       `</fieldset>`;
   }
   body.innerHTML = html;
@@ -238,7 +257,7 @@ function confirmOptions() {
     const count = findCategory(item.category).sides;
     sides = [...body.querySelectorAll('input[name="side"]:checked')].map((i) => i.value);
     if (sides.length !== count) {
-      document.getElementById("optionsError").textContent = `Please choose exactly ${count} sides.`;
+      document.getElementById("optionsError").textContent = t("opt_err", { n: count });
       return;
     }
   }
@@ -266,7 +285,7 @@ function changeQty(key, amount) {
 
 function showLimitNotice() {
   const toast = document.getElementById("toast");
-  toast.textContent = `Online orders are limited to ${MAX_QTY_PER_ITEM} of each item. For large orders please call us at ${PHONE}.`;
+  toast.textContent = t("toast_limit", { max: MAX_QTY_PER_ITEM, phone: PHONE });
   toast.classList.add("show");
   clearTimeout(showLimitNotice.timer);
   showLimitNotice.timer = setTimeout(() => toast.classList.remove("show"), 4000);
@@ -277,19 +296,19 @@ const cartTotal = () => cart.reduce((sum, l) => sum + l.price * l.qty, 0);
 function renderCart() {
   const box = document.getElementById("cartItems");
   if (cart.length === 0) {
-    box.innerHTML = `<p class="cart-empty">Your cart is empty. Add something tasty!</p>`;
+    box.innerHTML = `<p class="cart-empty">${t("cart_empty")}</p>`;
   } else {
     box.innerHTML = cart.map((l) => `
       <div class="cart-line">
         <div>
           <div class="cart-line-name">${lineName(l)}</div>
-          ${l.sides.length ? `<div class="cart-line-price">Sides: ${l.sides.join(", ")}</div>` : ""}
-          <div class="cart-line-price">${money(l.price)} each</div>
+          ${l.sides.length ? `<div class="cart-line-price">${t("sides_list", { list: l.sides.map((s) => t(`side_${s}`)).join(", ") })}</div>` : ""}
+          <div class="cart-line-price">${t("each", { price: money(l.price) })}</div>
         </div>
         <div class="qty">
-          <button data-key="${l.key}" data-change="-1" aria-label="Remove one">−</button>
+          <button data-key="${l.key}" data-change="-1" aria-label="${t("remove_one")}">−</button>
           <span>${l.qty}</span>
-          <button data-key="${l.key}" data-change="1" aria-label="Add one">+</button>
+          <button data-key="${l.key}" data-change="1" aria-label="${t("add_one")}">+</button>
         </div>
       </div>`).join("");
   }
@@ -339,15 +358,23 @@ function nextOpening() {
     const day = DAYS[(startIndex + i) % 7], h = todaysHours(day);
     if (!h) continue;
     if (i === 0 && now.minutes >= h.open) continue;
-    const when = i === 0 ? "today" : i === 1 ? "tomorrow" : day;
-    return `${when} at ${clockLabel(h.open)}`;
+    const time = clockLabel(h.open);
+    if (i === 0) return t("when_today", { time });
+    if (i === 1) return t("when_tomorrow", { time });
+    return t("when_day", { day: t("days")[DAYS.indexOf(day)], time });
   }
   return null;
 }
 
+function minutesLabel(n) {
+  if (n === 60) return t("hour_1");
+  if (n === 90) return t("hour_1_30");
+  return t("minutes", { n });
+}
+
 function closedMessage() {
   const next = nextOpening();
-  return `We're closed right now, so online ordering is paused.${next ? ` We open ${next}.` : ""}`;
+  return t("closed_msg") + (next ? t("open_at", { when: next }) : "");
 }
 
 // Updates the open/closed badge, pickup time choices and the order button
@@ -356,8 +383,8 @@ function updateOpeningStatus() {
   const h = todaysHours();
   const status = document.getElementById("openStatus");
   status.textContent = open
-    ? `🟢 Open now · until ${clockLabel(h.close)}`
-    : `🔴 Closed · opens ${nextOpening() || "soon"}`;
+    ? t("open_now", { time: clockLabel(h.close) })
+    : t("closed_opens", { when: nextOpening() || t("soon") });
   status.className = `open-status ${open ? "is-open" : "is-closed"}`;
 
   const select = document.getElementById("pickupMinutes");
@@ -365,7 +392,7 @@ function updateOpeningStatus() {
   [...select.options].forEach((o) => {
     const ok = canPickupIn(Number(o.value));
     o.disabled = !ok;
-    o.textContent = o.textContent.replace(/ \(.*\)$/, "") + (ok || !open ? "" : " (after closing)");
+    o.textContent = minutesLabel(Number(o.value)) + (ok || !open ? "" : ` ${t("after_closing")}`);
     if (ok && firstValid === null) firstValid = o;
   });
   if (select.selectedOptions[0]?.disabled && firstValid) firstValid.selected = true;
@@ -374,7 +401,7 @@ function updateOpeningStatus() {
   const notice = document.getElementById("closedNotice");
   notice.hidden = canOrder;
   notice.textContent = open
-    ? `We're about to close, so online ordering is paused. Please call us at ${PHONE}.`
+    ? t("closing_soon", { phone: PHONE })
     : closedMessage();
   document.getElementById("submitBtn").disabled = !canOrder;
 }
@@ -403,18 +430,18 @@ async function submitOrder(event) {
     message.classList.add("error");
   };
 
-  if (cart.length === 0) return fail("Please add at least one item to your order.");
+  if (cart.length === 0) return fail(t("err_empty"));
   if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_ACCESS_KEY")) {
     return fail("Setup needed: paste your Web3Forms access key at the top of script.js.");
   }
   if (cartTotal() > MAX_ORDER_TOTAL) {
-    return fail(`Orders over ${money(MAX_ORDER_TOTAL)} must be placed by phone. Please call us at ${PHONE}.`);
+    return fail(t("err_max", { max: money(MAX_ORDER_TOTAL), phone: PHONE }));
   }
 
   const data = new FormData(form);
   const phoneDigits = String(data.get("phone")).replace(/\D/g, "");
   if (phoneDigits.length < 7 || /[^0-9+()\-\s]/.test(data.get("phone"))) {
-    return fail("Please enter a real phone number (at least 7 digits) so we can reach you.");
+    return fail(t("err_phone"));
   }
 
   const needsCall = cartTotal() >= CONFIRM_CALL_ABOVE;
@@ -425,14 +452,14 @@ async function submitOrder(event) {
   if (!canPickupIn(minutes)) {
     updateOpeningStatus();
     return fail(isOpenNow()
-      ? "That pickup time is after closing time. Please choose an earlier time."
+      ? t("err_after_close")
       : closedMessage());
   }
   const readyAt = clockLabel(arubaNow().minutes + minutes);
 
   // Build a readable order list for the email
   const orderLines = cart.map((l) => {
-    let text = `${l.qty} x ${lineName(l)} — ${money(l.price * l.qty)}`;
+    let text = `${l.qty} x ${lineName(l, true)} — ${money(l.price * l.qty)}`;
     if (l.sides.length) text += `\n      Sides: ${l.sides.join(", ")}`;
     return text;
   }).join("\n");
@@ -451,6 +478,7 @@ async function submitOrder(event) {
     order: orderLines,
     total: money(cartTotal()),
     special_instructions: data.get("notes") || "None",
+    customer_language: { en: "English", es: "Spanish", pap: "Papiamento" }[currentLang],
   };
   if (needsCall) payload.important = "Large order: call the customer to confirm BEFORE you start cooking.";
   // Hidden "botcheck" box: real people never see it, spam robots tick it.
@@ -458,7 +486,7 @@ async function submitOrder(event) {
   if (data.get("botcheck")) payload.botcheck = true;
 
   button.disabled = true;
-  button.textContent = "Sending…";
+  button.textContent = t("sending");
 
   try {
     const response = await fetch(WEB3FORMS_URL, {
@@ -470,17 +498,17 @@ async function submitOrder(event) {
     if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
     message.textContent = needsCall
-      ? `✅ Thank you, ${data.get("name")}! Because this is a large order, we'll call you at ${data.get("phone")} to confirm before we start cooking.`
-      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}. ${isDriveThru ? "Just drive up to the drive-thru window and give your name." : "Collect it at the counter."}`;
+      ? t("ok_large", { name: data.get("name"), phone: data.get("phone") })
+      : `${t("ok_ready", { name: data.get("name"), time: readyAt })} ${t(isDriveThru ? "ok_drive" : "ok_inside")}`;
     message.classList.add("success");
     message.scrollIntoView({ behavior: "smooth", block: "center" });
     cart = [];
     renderCart();
     form.reset();
   } catch (err) {
-    fail(`❌ Sorry, your order didn't go through. Please call us at ${PHONE}.`);
+    fail(t("err_failed", { phone: PHONE }));
   } finally {
-    button.textContent = "Place order";
+    button.textContent = t("place_order");
     updateOpeningStatus();
   }
 }
@@ -492,16 +520,17 @@ document.getElementById("menuList").addEventListener("click", (e) => {
   const item = findItem(btn.dataset.id);
   if (hasOptions(item)) return openOptions(item);
   addToCart(item);
-  btn.textContent = "✓ Added";
-  setTimeout(() => (btn.textContent = "+ Add"), 800);
+  btn.textContent = t("added");
+  setTimeout(() => (btn.textContent = t("add")), 800);
 });
 
 document.getElementById("menu").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
   if (!tab) return;
-  document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach((el) => el.classList.remove("active"));
   tab.classList.add("active");
-  renderMenu(tab.dataset.category);
+  activeCategory = tab.dataset.category;
+  renderMenu();
 });
 
 document.getElementById("optionsBody").addEventListener("change", () => {
@@ -509,7 +538,7 @@ document.getElementById("optionsBody").addEventListener("change", () => {
   if (!counter) return;
   const count = findCategory(optionsItem.category).sides;
   const checked = document.querySelectorAll('#optionsBody input[name="side"]:checked').length;
-  counter.textContent = `(${checked} of ${count})`;
+  counter.textContent = t("opt_count", { c: checked, n: count });
 });
 
 document.getElementById("cartItems").addEventListener("click", (e) => {
@@ -533,6 +562,20 @@ document.getElementById("orderForm").addEventListener("reset", () => {
 });
 document.getElementById("year").textContent = new Date().getFullYear();
 
+// Language switch (EN / ES / PAP)
+document.querySelectorAll(".lang-switch button").forEach((b) =>
+  b.addEventListener("click", () => setLanguage(b.dataset.lang)));
+document.addEventListener("languagechange", () => {
+  if (optionsItem) closeOptions();
+  renderTabs();
+  renderMenu();
+  renderCart();
+  updateOpeningStatus();
+  const btn = document.getElementById("submitBtn");
+  if (!btn.disabled) btn.textContent = t("place_order");
+});
+
+applyStaticTranslations();
 renderTabs();
 renderMenu();
 renderCart();

@@ -6,7 +6,7 @@
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 
@@ -14,20 +14,25 @@
   <header class="topbar">
     <a class="logo" href="#"><img src="images/logo.png" alt="La Granja"></a>
     <nav class="topnav">
-      <a href="#menu">Menu</a>
-      <a href="#about">About</a>
+      <a href="#menu" data-i18n="nav_menu">Menu</a>
+      <a href="#about" data-i18n="nav_about">About</a>
     </nav>
-    <button class="cart-button" id="openCart" aria-label="Open cart">
-      🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="language">
+      <button type="button" data-lang="en" lang="en">EN</button>
+      <button type="button" data-lang="es" lang="es">ES</button>
+      <button type="button" data-lang="pap" lang="pap">PAP</button>
+    </div>
+    <button class="cart-button" id="openCart" aria-label="Open cart" data-i18n-aria="cart">
+      🛒 <span data-i18n="cart">Cart</span> <span class="cart-count" id="cartCount">0</span>
     </button>
   </header>
 
   <!-- ===== HERO ===== -->
   <section class="hero">
     <p class="open-status" id="openStatus"></p>
-    <h1>Grilled fresh. Ready when you are.</h1>
-    <p>Order online, choose your pickup time, and we'll have it hot and waiting.</p>
-    <a href="#menu" class="btn">Start your order</a>
+    <h1 data-i18n="hero_title">Grilled fresh. Ready when you are.</h1>
+    <p data-i18n="hero_sub">Order online, choose your pickup time, and we'll have it hot and waiting.</p>
+    <a href="#menu" class="btn" data-i18n="hero_cta">Start your order</a>
   </section>
 
   <!-- ===== CATEGORY TABS ===== -->
@@ -39,87 +44,87 @@
   <!-- ===== INFO ===== -->
   <!-- ===== ABOUT ===== -->
   <section class="about" id="about">
-    <p class="about-kicker">About</p>
-    <h2>The story behind our dishes</h2>
+    <p class="about-kicker" data-i18n="about_kicker">About</p>
+    <h2 data-i18n="about_title">The story behind our dishes</h2>
 
     <div class="about-grid">
       <div class="about-card">
-        <h3>What makes us stand out</h3>
-        <p>At the heart of La Granja is a fusion of authentic Peruvian heritage and the warmth of a family-friendly dining experience. Our dedication to bringing genuine Latin American flavors is evident in every dish we serve. We pride ourselves on not just cooking food but on crafting an authentic culinary experience that celebrates our roots.</p>
-        <p>What truly distinguishes us is our commitment to creating a welcoming atmosphere that feels like home. La Granja is more than a dining spot; it’s a place where families and friends come together, fostering connections in every meal. Our journey began right here in Aruba, and we remain proudly rooted in Oranjestad. We continually evolve to meet our customers’ diverse tastes while staying true to our Latin American roots.</p>
+        <h3 data-i18n="about_h1">What makes us stand out</h3>
+        <p data-i18n="about_p1">At the heart of La Granja is a fusion of authentic Peruvian heritage and the warmth of a family-friendly dining experience. Our dedication to bringing genuine Latin American flavors is evident in every dish we serve. We pride ourselves on not just cooking food but on crafting an authentic culinary experience that celebrates our roots.</p>
+        <p data-i18n="about_p2">What truly distinguishes us is our commitment to creating a welcoming atmosphere that feels like home. La Granja is more than a dining spot; it’s a place where families and friends come together, fostering connections in every meal. Our journey began right here in Aruba, and we remain proudly rooted in Oranjestad. We continually evolve to meet our customers’ diverse tastes while staying true to our Latin American roots.</p>
       </div>
       <div class="about-card">
-        <h3>Our mission statement</h3>
-        <p>Our mission is to quickly serve our customers homestyle food. We are dedicated to preparing and serving high-quality, flavorful Latin American flavors in a welcoming environment, where every meal is an opportunity to celebrate culture. Our commitment extends beyond the plate, as we strive to be a positive, contributing member of every community we serve.</p>
-        <a href="#menu" class="btn">Order online</a>
+        <h3 data-i18n="about_h2">Our mission statement</h3>
+        <p data-i18n="about_p3">Our mission is to quickly serve our customers homestyle food. We are dedicated to preparing and serving high-quality, flavorful Latin American flavors in a welcoming environment, where every meal is an opportunity to celebrate culture. Our commitment extends beyond the plate, as we strive to be a positive, contributing member of every community we serve.</p>
+        <a href="#menu" class="btn" data-i18n="about_cta">Order online</a>
       </div>
     </div>
   </section>
 
   <section class="info">
     <div>
-      <h3>📍 Location</h3>
+      <h3 data-i18n="info_location">📍 Location</h3>
       <p>Zandstraat 2<br>Oranjestad, Aruba</p>
-      <a class="info-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Granja+Zandstraat+2+Oranjestad+Aruba" target="_blank" rel="noopener">Get directions →</a>
+      <a class="info-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Granja+Zandstraat+2+Oranjestad+Aruba" target="_blank" rel="noopener" data-i18n="info_directions">Get directions →</a>
     </div>
     <div>
-      <h3>🕒 Hours</h3>
-      <p>Every day<br>11:00 AM – 9:00 PM</p>
+      <h3 data-i18n="info_hours">🕒 Hours</h3>
+      <p><span data-i18n="info_every_day">Every day</span><br>11:00 AM – 9:00 PM</p>
     </div>
     <div>
-      <h3>📞 Call us</h3>
+      <h3 data-i18n="info_call">📞 Call us</h3>
       <p><a href="tel:+2975691341">+297 569 1341</a></p>
     </div>
   </section>
 
-  <footer class="footer">© <span id="year"></span> La Granja. Pickup only. Pay when you pick up.<br>Food photos from <a href="https://unsplash.com">Unsplash</a>.</footer>
+  <footer class="footer">© <span id="year"></span> La Granja. <span data-i18n="footer_pickup">Pickup only. Pay when you pick up.</span><br><span data-i18n="footer_photos">Food photos from</span> <a href="https://unsplash.com">Unsplash</a>.</footer>
 
   <!-- ===== CART DRAWER ===== -->
   <div class="overlay" id="overlay"></div>
   <aside class="cart" id="cart" aria-label="Your order">
     <div class="cart-header">
-      <h2>Your Order</h2>
-      <button class="close" id="closeCart" aria-label="Close cart">✕</button>
+      <h2 data-i18n="cart_title">Your Order</h2>
+      <button class="close" id="closeCart" aria-label="Close cart" data-i18n-aria="close">✕</button>
     </div>
 
     <div id="cartItems" class="cart-items"></div>
 
     <div class="cart-total">
-      <span>Total</span>
+      <span data-i18n="total">Total</span>
       <strong id="cartTotal">Afl. 0.00</strong>
     </div>
 
     <!-- CHECKOUT FORM -->
     <form id="orderForm" class="order-form">
       <p class="closed-notice" id="closedNotice" hidden></p>
-      <h3>Pickup details</h3>
+      <h3 data-i18n="pickup_details">Pickup details</h3>
 
-      <label>Your name
+      <label><span data-i18n="f_name">Your name</span>
         <input type="text" name="name" required placeholder="Maria Croes">
       </label>
 
-      <label>Phone number
+      <label><span data-i18n="f_phone">Phone number</span>
         <input type="tel" name="phone" required placeholder="+297 560 1234"
-               pattern="[0-9+\(\)\-\s]{7,20}" title="Please enter a real phone number (at least 7 digits)">
+               pattern="[0-9+\(\)\-\s]{7,20}" title="Please enter a real phone number (at least 7 digits)" data-i18n-title="f_phone_title">
       </label>
 
-      <label>Email (for your receipt)
+      <label><span data-i18n="f_email">Email (for your receipt)</span>
         <input type="email" name="email" required placeholder="you@example.com">
       </label>
 
       <fieldset class="pickup-method">
-        <legend>How will you pick up?</legend>
+        <legend data-i18n="how_pickup">How will you pick up?</legend>
         <label class="choice"><input type="radio" name="pickup_method" value="Pickup inside" checked>
-          <span>🏠 Pickup inside<br><small>At the counter</small></span></label>
+          <span><span data-i18n="pickup_inside">🏠 Pickup inside</span><br><small data-i18n="pickup_inside_sub">At the counter</small></span></label>
         <label class="choice"><input type="radio" name="pickup_method" value="Drive-thru">
-          <span>🚗 Drive-thru<br><small>Stay in your car</small></span></label>
+          <span><span data-i18n="drive_thru">🚗 Drive-thru</span><br><small data-i18n="drive_thru_sub">Stay in your car</small></span></label>
       </fieldset>
 
-      <label class="car-field" id="carField" hidden>Your car (optional)
-        <input type="text" name="car" maxlength="60" placeholder="e.g. White Toyota Yaris">
+      <label class="car-field" id="carField" hidden><span data-i18n="car_label">Your car (optional)</span>
+        <input type="text" name="car" maxlength="60" placeholder="e.g. White Toyota Yaris" data-i18n-placeholder="car_ph">
       </label>
 
-      <label>I'll pick up in…
+      <label><span data-i18n="pickup_in">I'll pick up in…</span>
         <select name="pickup_minutes" id="pickupMinutes" required>
           <option value="20">20 minutes</option>
           <option value="30" selected>30 minutes</option>
@@ -129,15 +134,15 @@
         </select>
       </label>
 
-      <label>Special instructions (optional)
-        <textarea name="notes" rows="2" placeholder="Allergies, extra sauce, etc."></textarea>
+      <label><span data-i18n="notes_label">Special instructions (optional)</span>
+        <textarea name="notes" rows="2" placeholder="Allergies, extra sauce, etc." data-i18n-placeholder="notes_ph"></textarea>
       </label>
 
       <!-- Spam trap: hidden from people, robots fill it in -->
       <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <p class="form-note">We may call to confirm your order. Large orders are confirmed by phone before we start cooking.</p>
-      <button type="submit" class="btn btn-full" id="submitBtn">Place order</button>
+      <p class="form-note" data-i18n="form_note">We may call to confirm your order. Large orders are confirmed by phone before we start cooking.</p>
+      <button type="submit" class="btn btn-full" id="submitBtn" data-i18n="place_order">Place order</button>
       <p class="form-message" id="formMessage"></p>
     </form>
   </aside>
@@ -147,13 +152,14 @@
     <div id="optionsBody"></div>
     <p class="form-message error" id="optionsError"></p>
     <div class="options-buttons">
-      <button type="button" class="btn btn-light" id="optionsCancel">Cancel</button>
-      <button type="button" class="btn" id="optionsAdd">Add to order</button>
+      <button type="button" class="btn btn-light" id="optionsCancel" data-i18n="opt_cancel">Cancel</button>
+      <button type="button" class="btn" id="optionsAdd" data-i18n="opt_add">Add to order</button>
     </div>
   </div>
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="script.js?v=14"></script>
+  <script src="i18n.js?v=15"></script>
+  <script src="script.js?v=15"></script>
 </body>
 </html>

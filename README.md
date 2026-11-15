@@ -33,7 +33,7 @@ No coding experience needed to launch it. Follow the steps below in order.
 
 > 💡 Get a free code editor: **Visual Studio Code** (code.visualstudio.com). It makes editing these files much easier than Notepad.
 
-**After any change to `script.js` or `style.css`,** raise the `?v=8` number in `index.html` (e.g. to `?v=9`) so customers' phones load the new version right away instead of an old saved copy.
+**After any change to `script.js` or `style.css`,** raise the `?v=` number in `index.html` (for example from `?v=15` to `?v=16`, in all three places) so customers' phones load the new version right away instead of an old saved copy.
 
 ## Step 3: Make orders arrive in your email (Web3Forms, free) ✅ done
 
@@ -100,6 +100,18 @@ Other free options: **GitHub Pages** or **Cloudflare Pages**.
 
 1. Buy a domain like `lagranja.aw` (Aruba's own .aw ending) or a `.com` from a registrar like Namecheap, Cloudflare or Porkbun.
 2. In Netlify go to **Domain settings → Add custom domain** and follow the instructions.
+
+## Languages: English, Spanish, Papiamento
+
+Customers switch language with the **EN | ES | PAP** buttons at the top. Their choice is remembered on their phone. Phones set to Spanish start in Spanish.
+
+All translations are in **`i18n.js`**:
+- `TRANSLATIONS`: every sentence on the site, in `en`, `es` and `pap`. Change the text after the colon; keep `{curly}` words as they are.
+- `MENU_TRANSLATIONS`: dish names and descriptions in Spanish and Papiamento. A dish that isn't listed keeps its English name.
+
+The order email to the restaurant is always in English, with a `customer_language` line showing which language the customer used.
+
+**The Papiamento text should be checked by a native Aruban speaker** before you rely on it.
 
 ## Fake-order protection
 
