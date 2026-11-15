@@ -145,11 +145,11 @@ const MENU = [
     desc: "Served with 1 large rice, 1 large french fries and 2L Coca-Colas." },
 
   // ---- DRINKS ----
-  { id: "dr1", category: "drinks", name: "Coca-Cola", price: 3.50 },
-  { id: "dr2", category: "drinks", name: "Coca-Cola Zero", price: 3.50 },
-  { id: "dr3", category: "drinks", name: "Sprite", price: 3.50 },
-  { id: "dr4", category: "drinks", name: "Sprite Zero", price: 3.50 },
-  { id: "dr5", category: "drinks", name: "Orange Juice", price: 3.50 },
+  { id: "dr1", img: "images/drink-coca-cola.jpg", category: "drinks", name: "Coca-Cola", price: 3.50 },
+  { id: "dr2", img: "images/drink-coca-cola-zero.jpg", category: "drinks", name: "Coca-Cola Zero", price: 3.50 },
+  { id: "dr3", img: "images/drink-sprite.jpg", category: "drinks", name: "Sprite", price: 3.50 },
+  { id: "dr4", img: "images/drink-sprite-zero.jpg", category: "drinks", name: "Sprite Zero", price: 3.50 },
+  { id: "dr5", img: "images/drink-orange-juice.jpg", category: "drinks", name: "Orange Juice", price: 3.50 },
 ];
 
 
@@ -523,7 +523,8 @@ function confirmOptions() {
   if (needsSides(item)) {
     const count = findCategory(item.category).sides;
     sides = [...body.querySelectorAll('input[name="side"]:checked')].map((i) => i.value);
-    if (sides.length !== count) {
+    // 1 side or up to `count` sides; the price stays the same
+    if (sides.length < 1 || sides.length > count) {
       document.getElementById("optionsError").textContent = t("opt_err", { n: count });
       return;
     }
@@ -1012,6 +1013,11 @@ document.getElementById("optionsBody").addEventListener("change", () => {
   const count = findCategory(optionsItem.category).sides;
   const checked = document.querySelectorAll('#optionsBody input[name="side"]:checked').length;
   counter.textContent = t("opt_count", { c: checked, n: count });
+  // Once the maximum is chosen, the other sides can't be ticked
+  document.querySelectorAll('#optionsBody input[name="side"]').forEach((box) => {
+    box.disabled = !box.checked && checked >= count;
+    box.closest(".choice").classList.toggle("is-disabled", box.disabled);
+  });
 });
 
 document.getElementById("cartItems").addEventListener("click", (e) => {

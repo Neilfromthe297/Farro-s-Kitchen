@@ -537,6 +537,7 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .choice:has(input:checked) { border-color: var(--brand); background: var(--cream); }
 .choice input { width: 18px; height: 18px; accent-color: var(--brand); flex-shrink: 0; }
 .choice-price { margin-left: auto; font-weight: 700; }
+.choice.is-disabled { opacity: .45; cursor: not-allowed; }
 
 .pickup-method { border: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .pickup-method legend { font-weight: 600; font-size: .95rem; margin-bottom: 6px; }

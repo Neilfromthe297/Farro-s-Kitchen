@@ -76,7 +76,7 @@ You can hit **Reply** in your email to answer the customer directly.
   - `category` must be one of: `platters`, `seafood`, `sandwiches`, `sides`, `salads`, `family`.
   - `sub: "Lomo Saltado"` adds a smaller second name under the dish.
   - For Small/Large choices use `sizes: { Small: 7.25, Large: 12.00 }` instead of `price`.
-  - Platters automatically ask the customer to choose 2 sides. Add `noSides: true` to skip that.
+  - Platters ask the customer to choose 1 or 2 sides (same price). Add `noSides: true` to skip that.
   - `callToOrder: true` shows a "Call to order" button instead of "+ Add" (used for the family meals until they have prices).
   - `img` is optional. Without it, the dish shows an icon instead of a photo.
 - **Address, hours, phone:** in `index.html`, search for `Zandstraat 2`, `Every day` and `+297 582 2065` (also `PHONE` at the top of `script.js`). The map location is in the "MAP" section of `index.html`.
