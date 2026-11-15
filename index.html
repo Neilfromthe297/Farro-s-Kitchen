@@ -72,7 +72,8 @@
       </label>
 
       <label>Phone number
-        <input type="tel" name="phone" required placeholder="(555) 555-5555">
+        <input type="tel" name="phone" required placeholder="(555) 555-5555"
+               pattern="[0-9+\(\)\-\s]{7,20}" title="Please enter a real phone number (at least 7 digits)">
       </label>
 
       <label>Email (for your receipt)
@@ -93,6 +94,10 @@
         <textarea name="notes" rows="2" placeholder="Allergies, extra sauce, etc."></textarea>
       </label>
 
+      <!-- Spam trap: hidden from people, robots fill it in -->
+      <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <p class="form-note">We may call to confirm your order. Large orders are confirmed by phone before we start cooking.</p>
       <button type="submit" class="btn btn-full" id="submitBtn">Place order</button>
       <p class="form-message" id="formMessage"></p>
     </form>
@@ -107,6 +112,8 @@
       <button type="button" class="btn" id="optionsAdd">Add to order</button>
     </div>
   </div>
+
+  <div class="toast" id="toast" role="status"></div>
 
   <script src="script.js"></script>
 </body>

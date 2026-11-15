@@ -13,6 +13,14 @@ const PHONE = "(555) 123-4567";
 // Currency shown in front of every price
 const CURRENCY = "Afl.";
 
+/* ---------- FAKE-ORDER PROTECTION (amounts in florins) ---------- */
+// Most of one dish (same options) a customer can order online
+const MAX_QTY_PER_ITEM = 10;
+// Orders above this total can't be placed online: customer must call
+const MAX_ORDER_TOTAL = 300;
+// Orders at or above this total are marked "CALL TO CONFIRM" in your email
+const CONFIRM_CALL_ABOVE = 150;
+
 
 /* =========================================================
    STEP 2: YOUR MENU
@@ -227,6 +235,7 @@ function confirmOptions() {
 function addToCart(item, size = null, sides = []) {
   const key = [item.id, size, sides.join("+")].join("|");
   const existing = cart.find((l) => l.key === key);
+  if (existing && existing.qty >= MAX_QTY_PER_ITEM) return showLimitNotice();
   if (existing) existing.qty += 1;
   else cart.push({ key, id: item.id, size, sides, price: size ? item.sizes[size] : item.price, qty: 1 });
   renderCart();
@@ -234,9 +243,18 @@ function addToCart(item, size = null, sides = []) {
 
 function changeQty(key, amount) {
   const line = cart.find((l) => l.key === key);
+  if (amount > 0 && line.qty >= MAX_QTY_PER_ITEM) return showLimitNotice();
   line.qty += amount;
   if (line.qty <= 0) cart = cart.filter((l) => l !== line);
   renderCart();
+}
+
+function showLimitNotice() {
+  const toast = document.getElementById("toast");
+  toast.textContent = `Online orders are limited to ${MAX_QTY_PER_ITEM} of each item. For large orders please call us at ${PHONE}.`;
+  toast.classList.add("show");
+  clearTimeout(showLimitNotice.timer);
+  showLimitNotice.timer = setTimeout(() => toast.classList.remove("show"), 4000);
 }
 
 const cartTotal = () => cart.reduce((sum, l) => sum + l.price * l.qty, 0);
@@ -292,7 +310,20 @@ async function submitOrder(event) {
     return;
   }
 
+  if (cartTotal() > MAX_ORDER_TOTAL) {
+    message.textContent = `Orders over ${money(MAX_ORDER_TOTAL)} must be placed by phone. Please call us at ${PHONE}.`;
+    message.classList.add("error");
+    return;
+  }
+
   const data = new FormData(form);
+  const phoneDigits = String(data.get("phone")).replace(/\D/g, "");
+  if (phoneDigits.length < 7 || /[^0-9+()\-\s]/.test(data.get("phone"))) {
+    message.textContent = "Please enter a real phone number (at least 7 digits) so we can reach you.";
+    message.classList.add("error");
+    return;
+  }
+  const needsCall = cartTotal() >= CONFIRM_CALL_ABOVE;
   const minutes = Number(data.get("pickup_minutes"));
   const readyAt = new Date(Date.now() + minutes * 60000)
     .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -307,7 +338,7 @@ async function submitOrder(event) {
   const payload = {
     access_key: WEB3FORMS_ACCESS_KEY,
     from_name: "Farro's Kitchen Website",
-    subject: `NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
+    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}NEW ORDER: ${data.get("name")} — pickup in ${minutes} min (${readyAt})`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
     email: data.get("email"),           // lets you hit "Reply" to answer the customer
@@ -318,6 +349,10 @@ async function submitOrder(event) {
     total: money(cartTotal()),
     special_instructions: data.get("notes") || "None",
   };
+  if (needsCall) payload.important = "Large order: call the customer to confirm BEFORE you start cooking.";
+  // Hidden "botcheck" box: real people never see it, spam robots tick it.
+  // Web3Forms automatically rejects the order when it's ticked.
+  if (data.get("botcheck")) payload.botcheck = true;
 
   button.disabled = true;
   button.textContent = "Sending…";
@@ -331,7 +366,9 @@ async function submitOrder(event) {
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.message || "Server said no");
 
-    message.textContent = `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
+    message.textContent = needsCall
+      ? `✅ Thank you, ${data.get("name")}! Because this is a large order, we'll call you at ${data.get("phone")} to confirm before we start cooking.`
+      : `✅ Thank you, ${data.get("name")}! Your order will be ready around ${readyAt}.`;
     message.classList.add("success");
     cart = [];
     renderCart();

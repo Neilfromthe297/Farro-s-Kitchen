@@ -97,6 +97,20 @@ Other free options: **GitHub Pages** or **Cloudflare Pages**.
 1. Buy a domain like `farroskitchen.com` (about $10–20 a year) from Namecheap, Cloudflare, Porkbun, or a similar registrar.
 2. In Netlify go to **Domain settings → Add custom domain** and follow the instructions.
 
+## Fake-order protection
+
+The website has these protections built in. Change the numbers at the top of `script.js`:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `MAX_QTY_PER_ITEM` | 10 | The most of one dish someone can order online |
+| `MAX_ORDER_TOTAL` | 300 | Orders above Afl. 300 can't be placed online; the customer is asked to call |
+| `CONFIRM_CALL_ABOVE` | 150 | Orders of Afl. 150 or more arrive with **"⚠️ LARGE ORDER, CALL TO CONFIRM"** in the email subject |
+
+It also checks the phone number has at least 7 digits, and has a hidden spam trap that blocks robots.
+
+**Your rule in the kitchen:** for any order marked LARGE ORDER, or from a phone number you don't recognize, call the customer **before** you start cooking. If nobody answers, don't cook it.
+
 ## Step 7: Before going live, a checklist
 
 - [ ] Placed a test order and received the email
