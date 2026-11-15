@@ -9,7 +9,7 @@
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
   <link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/bitter-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=27">
 </head>
 <body>
   <!-- Icons: Lucide v0.460.0 (https://lucide.dev), ISC License.
@@ -184,6 +184,22 @@
 
     <div id="cartItems" class="cart-items"></div>
 
+    <!-- Promo code -->
+    <div class="promo" id="promoBox">
+      <label for="promoInput" data-i18n="promo_label">Promo code</label>
+      <div class="promo-row">
+        <input type="text" id="promoInput" maxlength="30" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" enterkeyhint="done" placeholder="Enter code" data-i18n-placeholder="promo_ph">
+        <button type="button" class="btn btn-light" id="promoApply" data-i18n="promo_apply">Apply</button>
+      </div>
+      <p class="promo-msg" id="promoMsg"></p>
+    </div>
+
+    <div class="cart-sums">
+      <div class="sum-line" id="subtotalLine" hidden><span data-i18n="subtotal">Subtotal</span><span id="cartSubtotal"></span></div>
+      <div class="sum-line sum-discount" id="discountLine" hidden><span id="discountLabel"></span><span id="cartDiscount"></span></div>
+    </div>
+
     <div class="cart-total">
       <span data-i18n="total">Total</span>
       <strong id="cartTotal">Afl. 0.00</strong>
@@ -219,14 +235,9 @@
         <input type="text" name="car" maxlength="60" autocomplete="off" placeholder="e.g. White Toyota Yaris" data-i18n-placeholder="car_ph">
       </label>
 
-      <label><span data-i18n="pickup_in">I'll pick up in…</span>
-        <select name="pickup_minutes" id="pickupMinutes" required>
-          <option value="20">20 minutes</option>
-          <option value="30" selected>30 minutes</option>
-          <option value="45">45 minutes</option>
-          <option value="60">1 hour</option>
-          <option value="90">1 hour 30 minutes</option>
-        </select>
+      <label><span id="pickupLabel" data-i18n="pickup_in">I'll pick up in…</span>
+        <!-- Choices are filled in by script.js (depends on opening hours) -->
+        <select name="pickup_minutes" id="pickupMinutes" required></select>
       </label>
 
       <label><span data-i18n="notes_label">Special instructions (optional)</span>
@@ -255,7 +266,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="i18n.js?v=26"></script>
-  <script src="script.js?v=26"></script>
+  <script src="i18n.js?v=27"></script>
+  <script src="script.js?v=27"></script>
 </body>
 </html>

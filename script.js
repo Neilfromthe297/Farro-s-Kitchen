@@ -36,6 +36,20 @@ const MAX_ORDER_TOTAL = 300;
 // Orders at or above this total are marked "CALL TO CONFIRM" in your email
 const CONFIRM_CALL_ABOVE = 150;
 
+/* ---------- PICKUP TIMES ---------- */
+// While open: "pick up in ..." choices (minutes from now)
+const PICKUP_MINUTES = [15, 20, 30, 45, 60];
+// While closed: pre-order choices (minutes after opening time); earliest = 20 min after opening
+const PREORDER_AFTER_OPENING = [20, 30, 45, 60];
+
+/* ---------- PROMO CODES ----------
+   Codes are stored as a scrambled fingerprint (SHA-256), never as plain text,
+   so nobody can find them by reading the website's code.
+   To add or change a code, ask Claude (or see README.md). */
+const PROMO_CODES = [
+  { hash: "4f035064318612a518e5bc6f575a77951bc04ce99e8316fc7bb522161d16de92", percent: 25 },
+];
+
 
 /* =========================================================
    STEP 2: YOUR MENU
@@ -347,13 +361,16 @@ function renderReceipt() {
     </div>
     <p class="rc-hint">${t("rc_show")}</p>
     <dl class="rc-facts">
-      <div><dt>${icon("clock")} ${t("rc_ready")}</dt><dd>${o.readyAt}</dd></div>
+      <div><dt>${icon("clock")} ${t(o.preorder ? "rc_ready_pre" : "rc_ready")}</dt><dd>${o.readyAt}</dd></div>
       <div><dt>${icon(o.driveThru ? "car" : "house")} ${t("rc_pickup")}</dt>
         <dd>${t(o.driveThru ? "drive_thru" : "pickup_inside")}${o.driveThru && o.car ? ` · ${esc(o.car)}` : ""}</dd></div>
       <div><dt>${icon("map-pin")} ${t("rc_where")}</dt><dd>Zandstraat 2, Oranjestad</dd></div>
     </dl>
+    ${o.preorder ? `<p class="rc-call">${icon("clock")} ${esc(t("rc_preorder"))}</p>` : ""}
     ${o.needsCall ? `<p class="rc-call">${icon("phone")} ${esc(t("rc_call", { phone: o.phone }))}</p>` : ""}
     <ul class="rc-lines">${lines}</ul>
+    ${o.discount ? `<div class="rc-sub"><span>${t("subtotal")}</span><span>${money(o.subtotal)}</span></div>
+    <div class="rc-sub rc-discount"><span>${t("discount", { percent: o.promoPercent })}</span><span>− ${money(o.discount)}</span></div>` : ""}
     <div class="rc-total"><span>${t("total")}</span><strong>${money(o.total)}</strong></div>
     <p class="rc-pay">${t("rc_pay")}</p>
     <p class="rc-help">${t("rc_help")} <a href="tel:${PHONE.replace(/[^\d+]/g, "")}">${PHONE}</a></p>
@@ -424,7 +441,68 @@ function showLimitNotice() {
   showLimitNotice.timer = setTimeout(() => toast.classList.remove("show"), 4000);
 }
 
-const cartTotal = () => cart.reduce((sum, l) => sum + l.price * l.qty, 0);
+const cartTotal = () => cart.reduce((sum, l) => sum + l.price * l.qty, 0);   // before discount
+
+// ---------- Promo codes ----------
+let appliedPromo = null;          // { code, percent } once a valid code is applied
+const round2 = (n) => Math.round(n * 100) / 100;
+const discountAmount = () => (appliedPromo ? round2(cartTotal() * appliedPromo.percent / 100) : 0);
+const payTotal = () => round2(cartTotal() - discountAmount());
+
+async function sha256(text) {
+  const bytes = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function showPromoMessage(type, text, withRemove = false) {
+  const msg = document.getElementById("promoMsg");
+  msg.className = `promo-msg ${type}`;
+  msg.replaceChildren(Object.assign(document.createElement("span"), { textContent: text }));
+  if (withRemove) {
+    const btn = Object.assign(document.createElement("button"), { type: "button", className: "promo-remove", textContent: t("promo_remove") });
+    btn.addEventListener("click", removePromo);
+    msg.append(btn);
+  }
+}
+
+async function applyPromo() {
+  const input = document.getElementById("promoInput");
+  const code = input.value.trim().toUpperCase();
+  if (!code) return showPromoMessage("error", t("promo_empty"));
+  let hash = "";
+  try { hash = await sha256(code); } catch (e) { /* very old browser */ }
+  const match = PROMO_CODES.find((p) => p.hash === hash);
+  if (!match) {
+    appliedPromo = null;
+    renderCart();
+    return showPromoMessage("error", t("promo_bad"));
+  }
+  appliedPromo = { code, percent: match.percent };
+  input.value = code;
+  renderCart();
+  showPromoMessage("success", t("promo_ok", { percent: match.percent }), true);
+}
+
+function removePromo() {
+  appliedPromo = null;
+  document.getElementById("promoInput").value = "";
+  document.getElementById("promoMsg").replaceChildren();
+  document.getElementById("promoMsg").className = "promo-msg";
+  renderCart();
+}
+
+function renderTotals() {
+  const hasPromo = Boolean(appliedPromo) && cart.length > 0;
+  document.getElementById("subtotalLine").hidden = !hasPromo;
+  document.getElementById("discountLine").hidden = !hasPromo;
+  if (hasPromo) {
+    document.getElementById("cartSubtotal").textContent = money(cartTotal());
+    document.getElementById("discountLabel").textContent = t("discount", { percent: appliedPromo.percent });
+    document.getElementById("cartDiscount").textContent = `− ${money(discountAmount())}`;
+  }
+  document.getElementById("cartTotal").textContent = money(payTotal());
+}
 
 function renderCart() {
   const box = document.getElementById("cartItems");
@@ -447,7 +525,7 @@ function renderCart() {
   }
   const count = cart.reduce((a, l) => a + l.qty, 0);
   document.getElementById("cartCount").textContent = count;
-  document.getElementById("cartTotal").textContent = money(cartTotal());
+  renderTotals();
   updateOrderBar();
   renderReceipt();
 }
@@ -459,7 +537,7 @@ function updateOrderBar() {
   bar.hidden = count === 0 || isCartOpen();
   document.body.classList.toggle("has-order-bar", count > 0);
   document.getElementById("orderBarCount").textContent = count;
-  document.getElementById("orderBarTotal").textContent = money(cartTotal());
+  document.getElementById("orderBarTotal").textContent = money(payTotal());
 }
 
 // Small bounce on the cart so customers see something was added
@@ -541,6 +619,53 @@ function canPickupIn(minutes) {
   return isOpenNow() && now.minutes + minutes <= h.close;
 }
 
+// Next opening: { i: days from today, day, open: minutes after midnight }
+function nextOpeningInfo() {
+  const now = arubaNow();
+  const startIndex = DAYS.indexOf(now.day);
+  for (let i = 0; i < 8; i++) {
+    const day = DAYS[(startIndex + i) % 7], h = todaysHours(day);
+    if (!h) continue;
+    if (i === 0 && now.minutes >= h.open) continue;
+    return { i, day, open: h.open, close: h.close };
+  }
+  return null;
+}
+
+// "today at 11:20 AM" / "tomorrow at 11:20 AM" / "Monday at 11:20 AM"
+function whenLabel(info, minuteOfDay, lang = currentLang) {
+  const time = clockLabel(minuteOfDay);
+  const tr = (key, vars) => (lang === currentLang ? t(key, vars) : tIn(lang, key, vars));
+  if (info.i === 0) return tr("when_today", { time });
+  if (info.i === 1) return tr("when_tomorrow", { time });
+  const days = lang === currentLang ? t("days") : TRANSLATIONS[lang].days;
+  return tr("when_day", { day: days[DAYS.indexOf(info.day)], time });
+}
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+function tIn(lang, key, vars = {}) {
+  const text = TRANSLATIONS[lang][key] ?? key;
+  return text.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+}
+
+// The pickup choices that are possible right now
+function pickupChoices() {
+  const now = arubaNow();
+  const nowChoices = isOpenNow()
+    ? PICKUP_MINUTES.filter((m) => canPickupIn(m)).map((m) => ({
+        value: `now:${m}`, label: minutesLabel(m),
+        readyAt: clockLabel(now.minutes + m), readyAtEn: clockLabel(now.minutes + m), preorder: false, minutes: m,
+      }))
+    : [];
+  if (nowChoices.length) return { mode: "now", choices: nowChoices };
+  const info = nextOpeningInfo();
+  if (!info) return { mode: "none", choices: [] };
+  const pre = PREORDER_AFTER_OPENING.filter((a) => info.open + a <= info.close).map((a) => ({
+    value: `pre:${a}`, label: capitalize(whenLabel(info, info.open + a)),
+    readyAt: whenLabel(info, info.open + a), readyAtEn: whenLabel(info, info.open + a, "en"), preorder: true, minutes: a,
+  }));
+  return { mode: pre.length ? "pre" : "none", choices: pre, info };
+}
+
 // "We open today at 11:00 AM" / "We open Monday at 11:00 AM"
 function nextOpening() {
   const now = arubaNow();
@@ -578,24 +703,23 @@ function updateOpeningStatus() {
     : t("closed_opens", { when: nextOpening() || t("soon") });
   status.className = `open-status ${open ? "is-open" : "is-closed"}`;
 
+  // Pickup time choices: "in 15–60 minutes" while open, or a pre-order after opening while closed
   const select = document.getElementById("pickupMinutes");
-  let firstValid = null;
-  [...select.options].forEach((o) => {
-    const ok = canPickupIn(Number(o.value));
-    o.disabled = !ok;
-    o.textContent = minutesLabel(Number(o.value)) + (ok || !open ? "" : ` ${t("after_closing")}`);
-    if (ok && firstValid === null) firstValid = o;
-  });
-  if (select.selectedOptions[0]?.disabled && firstValid) firstValid.selected = true;
+  const { mode, choices } = pickupChoices();
+  const previous = select.value;
+  select.replaceChildren(...choices.map((c) => new Option(c.label, c.value)));
+  if (choices.some((c) => c.value === previous)) select.value = previous;
+  else if (mode === "now" && choices.some((c) => c.value === "now:30")) select.value = "now:30";
+  document.getElementById("pickupLabel").textContent = t(mode === "pre" ? "pickup_when" : "pickup_in");
 
-  const canOrder = open && firstValid !== null;
   const notice = document.getElementById("closedNotice");
-  notice.hidden = canOrder;
-  notice.innerHTML = icon("circle-alert");
+  notice.hidden = mode === "now";
+  notice.classList.toggle("is-info", mode === "pre");
+  notice.innerHTML = icon(mode === "pre" ? "clock" : "circle-alert");
   notice.append(Object.assign(document.createElement("span"), {
-    textContent: open ? t("closing_soon", { phone: PHONE }) : closedMessage(),
+    textContent: mode === "pre" ? t("preorder_notice", { when: choices[0].readyAt }) : closedMessage(),
   }));
-  document.getElementById("submitBtn").disabled = !canOrder;
+  document.getElementById("submitBtn").disabled = mode === "none";
 }
 
 function openCart() {
@@ -646,14 +770,13 @@ async function submitOrder(event) {
   const pickupMethod = data.get("pickup_method") || "Pickup inside";
   const isDriveThru = pickupMethod === "Drive-thru";
   const car = String(data.get("car") || "").trim();
-  const minutes = Number(data.get("pickup_minutes"));
-  if (!canPickupIn(minutes)) {
+  const slot = pickupChoices().choices.find((c) => c.value === data.get("pickup_minutes"));
+  if (!slot) {
     updateOpeningStatus();
-    return fail(isOpenNow()
-      ? t("err_after_close")
-      : closedMessage());
+    return fail(t("err_pickup_again"));
   }
-  const readyAt = clockLabel(arubaNow().minutes + minutes);
+  const minutes = slot.minutes;
+  const readyAt = slot.readyAt;
   const orderNumber = makeOrderNumber();
 
   // Build a readable order list for the email
@@ -666,17 +789,22 @@ async function submitOrder(event) {
   const payload = {
     access_key: WEB3FORMS_ACCESS_KEY,
     from_name: "La Granja Website",
-    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}#${orderNumber} NEW ORDER: ${data.get("name")} — ${isDriveThru ? "🚗 DRIVE-THRU" : "pickup inside"} in ${minutes} min (${readyAt})`,
+    subject: `${needsCall ? "⚠️ LARGE ORDER, CALL TO CONFIRM: " : ""}${slot.preorder ? "📅 PRE-ORDER: " : ""}#${orderNumber} NEW ORDER: ${data.get("name")} — ${isDriveThru ? "🚗 DRIVE-THRU" : "pickup inside"} ${slot.preorder ? slot.readyAtEn : `in ${minutes} min (${readyAt})`}`,
     order_number: `#${orderNumber}`,
     customer_name: data.get("name"),
     customer_phone: data.get("phone"),
     email: data.get("email"),           // lets you hit "Reply" to answer the customer
     replyto: data.get("email"),
     pickup_method: isDriveThru ? `🚗 Drive-thru${car ? ` (car: ${car})` : ""}` : "Pickup inside (counter)",
-    pickup_in: `${minutes} minutes`,
-    pickup_time: readyAt,
+    pickup_in: slot.preorder ? `PRE-ORDER placed while closed: start cooking after opening` : `${minutes} minutes`,
+    pickup_time: slot.readyAtEn,
     order: orderLines,
-    total: money(cartTotal()),
+    ...(appliedPromo ? {
+      subtotal: money(cartTotal()),
+      promo_code: `${appliedPromo.code} (${appliedPromo.percent}% off)`,
+      discount: `- ${money(discountAmount())}`,
+    } : {}),
+    total: `${money(payTotal())}${appliedPromo ? " (after discount)" : ""}`,
     special_instructions: data.get("notes") || "None",
     customer_language: { en: "English", es: "Spanish", pap: "Papiamento" }[currentLang],
   };
@@ -701,10 +829,13 @@ async function submitOrder(event) {
     saveLastOrder({
       number: orderNumber, name: String(data.get("name")), phone: String(data.get("phone")),
       lines: cart.map((l) => ({ id: l.id, size: l.size, sides: l.sides, price: l.price, qty: l.qty })),
-      total: cartTotal(), readyAt, driveThru: isDriveThru, car, needsCall, savedAt: Date.now(),
+      total: payTotal(), subtotal: cartTotal(), discount: discountAmount(),
+      promoPercent: appliedPromo ? appliedPromo.percent : 0, preorder: slot.preorder,
+      readyAt, driveThru: isDriveThru, car, needsCall, savedAt: Date.now(),
     });
     setMessage(message, "", "");
     cart = [];
+    removePromo();
     renderCart();
     form.reset();
   } catch (err) {
@@ -762,6 +893,10 @@ document.getElementById("openCart").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
 document.getElementById("orderBar").addEventListener("click", openCart);
+document.getElementById("promoApply").addEventListener("click", applyPromo);
+document.getElementById("promoInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); applyPromo(); }
+});
 
 // ---------- Chicken animation in the logo ----------
 // The chicken moves for 10 seconds, then stays still; this repeats every minute.
@@ -828,6 +963,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
 document.querySelectorAll(".lang-switch button").forEach((b) =>
   b.addEventListener("click", () => setLanguage(b.dataset.lang)));
 document.addEventListener("languagechange", () => {
+  if (appliedPromo) showPromoMessage("success", t("promo_ok", { percent: appliedPromo.percent }), true);
   if (optionsItem) closeOptions();
   renderTabs();
   renderMenu();

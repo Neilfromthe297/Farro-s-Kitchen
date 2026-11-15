@@ -119,6 +119,23 @@ The order email to the restaurant is always in English, with a `customer_languag
 
 `privacy.html` explains what personal details the site collects and why, in English, Spanish and Papiamento. It's linked from the footer and the checkout. **If anything changes** (for example online card payment, a new email address, or a different host), update the policy too, and change the "Last updated" date in all three languages.
 
+## Pickup times and pre-orders
+
+Set at the top of `script.js`:
+- `PICKUP_MINUTES` (while open): customers choose to pick up in 15, 20, 30, 45 or 60 minutes. Times after closing are not offered.
+- `PREORDER_AFTER_OPENING` (while closed): customers can **pre-order** for pickup 20, 30, 45 or 60 minutes after the next opening (earliest: 20 minutes after opening).
+
+Pre-orders arrive with **📅 PRE-ORDER** at the start of the email subject and the pickup day and time, e.g. "tomorrow at 11:20 AM". Start cooking after opening.
+
+## Promo codes
+
+Customers can enter a promo code at checkout. There is currently one code, giving **25% off**. **Never write the codes themselves in this file**: this README is public on GitHub and on the website.
+
+- Codes are stored in `PROMO_CODES` in `script.js` as a scrambled fingerprint (SHA-256), not as the code itself, so people can't find the code by looking at the website's code.
+- The order email shows the subtotal, the promo code used, the discount and the total to pay.
+- To add, change or remove a code, ask Claude, or create the SHA-256 fingerprint of the code in CAPITAL letters and add a line like `{ hash: "...", percent: 10 },`.
+- Note: someone very determined could still guess short codes by trying many combinations. Longer codes are harder to guess, and staff can always check the code in the order email.
+
 ## Fake-order protection
 
 The website has these protections built in. Change the numbers at the top of `script.js`:

@@ -378,6 +378,32 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .cart-total { display: flex; justify-content: space-between; font-size: 1.25rem; padding: 16px 0; }
 .cart-total strong { font-family: var(--font-heading); }
 
+/* ===== PROMO CODE & TOTALS ===== */
+.promo { padding: 14px 0 4px; display: flex; flex-direction: column; gap: 6px; }
+.promo label { font-weight: 600; font-size: .95rem; }
+.promo-row { display: flex; gap: 8px; }
+.promo-row input {
+  flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px;
+  font-size: 1rem; font-family: inherit; text-transform: uppercase; letter-spacing: .06em;
+}
+.promo-row input::placeholder { text-transform: none; letter-spacing: 0; }
+.promo-row input:focus { outline: 2px solid var(--peach); border-color: var(--brand); }
+.promo-row .btn { padding: 11px 18px; }
+.promo-msg { font-size: .9rem; font-weight: 600; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.promo-msg:empty { display: none; }
+.promo-msg.success { color: var(--success); }
+.promo-msg.error { color: var(--error); }
+.promo-remove { background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; padding: 4px 0; }
+.cart-sums { padding-top: 10px; }
+.sum-line { display: flex; justify-content: space-between; color: var(--muted); padding: 2px 0; }
+.sum-line[hidden] { display: none; }
+.sum-discount { color: var(--success); font-weight: 700; }
+.cart.showing-receipt #promoBox, .cart.showing-receipt .cart-sums { display: none; }
+.closed-notice.is-info { background: var(--cream); color: var(--text); border-color: var(--peach); }
+.closed-notice.is-info .icon { color: var(--brand); }
+.rc-sub { display: flex; justify-content: space-between; color: var(--muted); }
+.rc-discount { color: var(--success); font-weight: 700; }
+
 /* ===== ON-SCREEN RECEIPT ===== */
 .receipt[hidden] { display: none; }
 .cart.showing-receipt #cartItems,
