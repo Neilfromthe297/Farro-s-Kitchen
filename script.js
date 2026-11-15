@@ -295,44 +295,68 @@ function closeCart() {
   document.getElementById("overlay").classList.remove("show");
 }
 
-// ---------- Send the order by email ----------
-async function submitOrder(event) {
-  event.preventDefault();
-  const form = event.target;
+// ---------- Send the order (WhatsApp + email copy) ----------
+// The green button is a REAL link to WhatsApp. Phones always let a tapped
+// link open WhatsApp (automatic pop-ups get blocked), so when it's tapped we:
+//   1. check the order, 2. put the order text into the link,
+//   3. send the email copy in the background, 4. let the link open WhatsApp.
+function sendOrder(event) {
+  const form = document.getElementById("orderForm");
+  const link = document.getElementById("submitBtn");
   const message = document.getElementById("formMessage");
-  const button = document.getElementById("submitBtn");
   message.className = "form-message";
+  message.textContent = "";
 
-  if (cart.length === 0) {
-    message.textContent = "Please add at least one item to your order.";
-    message.classList.add("error");
-    return;
-  }
-  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_ACCESS_KEY")) {
-    message.textContent = "Setup needed: paste your Web3Forms access key at the top of script.js.";
-    message.classList.add("error");
-    return;
-  }
+  const fail = (text) => {
+    event.preventDefault();               // stop the link: don't open WhatsApp
+    if (text) {
+      message.textContent = text;
+      message.classList.add("error");
+    }
+  };
 
+  if (cart.length === 0) return fail("Please add at least one item to your order.");
   if (cartTotal() > MAX_ORDER_TOTAL) {
-    message.textContent = `Orders over ${money(MAX_ORDER_TOTAL)} must be placed by phone. Please call us at ${PHONE}.`;
-    message.classList.add("error");
-    return;
+    return fail(`Orders over ${money(MAX_ORDER_TOTAL)} must be placed by phone. Please call us at ${PHONE}.`);
   }
+  if (!form.reportValidity()) return fail();   // browser shows which field is missing
 
   const data = new FormData(form);
   const phoneDigits = String(data.get("phone")).replace(/\D/g, "");
   if (phoneDigits.length < 7 || /[^0-9+()\-\s]/.test(data.get("phone"))) {
-    message.textContent = "Please enter a real phone number (at least 7 digits) so we can reach you.";
-    message.classList.add("error");
-    return;
+    return fail("Please enter a real phone number (at least 7 digits) so we can reach you.");
   }
+
   const needsCall = cartTotal() >= CONFIRM_CALL_ABOVE;
   const minutes = Number(data.get("pickup_minutes"));
   const readyAt = new Date(Date.now() + minutes * 60000)
     .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const isBot = Boolean(data.get("botcheck"));
 
-  // Build a readable order list for the email
+  // 2. Put the order into the WhatsApp link (the tap then opens it)
+  const waUrl = whatsappLink(buildWhatsAppText({
+    name: data.get("name"), phone: data.get("phone"), minutes, readyAt,
+    notes: data.get("notes"), needsCall,
+  }));
+  link.href = waUrl;
+
+  // 3. Email copy (backup). "keepalive" lets it finish even if the page is left.
+  sendEmailCopy(data, { minutes, readyAt, needsCall, isBot });
+
+  if (isBot) return fail();   // robots: email is dropped by Web3Forms, no WhatsApp
+
+  // 4. The link opens WhatsApp now. Show what to do next and empty the cart.
+  showWhatsAppConfirmation(message, {
+    name: data.get("name"), phone: data.get("phone"), readyAt, needsCall, waUrl,
+  });
+  cart = [];
+  renderCart();
+  form.reset();
+  setTimeout(() => (link.href = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}`), 1000);
+}
+
+function sendEmailCopy(data, { minutes, readyAt, needsCall, isBot }) {
+  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_ACCESS_KEY")) return;
   const orderLines = cart.map((l) => {
     let text = `${l.qty} x ${lineName(l)} — ${money(l.price * l.qty)}`;
     if (l.sides.length) text += `\n      Sides: ${l.sides.join(", ")}`;
@@ -352,50 +376,19 @@ async function submitOrder(event) {
     order: orderLines,
     total: money(cartTotal()),
     special_instructions: data.get("notes") || "None",
+    sent_on_whatsapp: "Customer was sent to WhatsApp to send this order. If no WhatsApp message arrives, call them.",
   };
   if (needsCall) payload.important = "Large order: call the customer to confirm BEFORE you start cooking.";
   // Hidden "botcheck" box: real people never see it, spam robots tick it.
   // Web3Forms automatically rejects the order when it's ticked.
-  if (data.get("botcheck")) payload.botcheck = true;
+  if (isBot) payload.botcheck = true;
 
-  payload.sent_on_whatsapp = "Customer was sent to WhatsApp to send this order. If no WhatsApp message arrives, call them.";
-
-  // A robot ticked the hidden box: send nothing to WhatsApp (Web3Forms drops the email)
-  const isBot = Boolean(data.get("botcheck"));
-
-  // 1) Open WhatsApp with the order typed out. This must happen right away,
-  //    while the customer's tap is "fresh", or phones may block it.
-  const waUrl = whatsappLink(buildWhatsAppText({
-    name: data.get("name"), phone: data.get("phone"), minutes, readyAt,
-    notes: data.get("notes"), needsCall,
-  }));
-  const waWindow = isBot ? null : window.open(waUrl, "_blank");
-
-  // 2) Send the email copy in the background (backup)
-  button.disabled = true;
-  button.textContent = "Sending…";
-  try {
-    const response = await fetch(WEB3FORMS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload),
-    });
-    await response.json();
-  } catch (err) {
-    // The email backup failed; WhatsApp is still the main way the order arrives.
-  }
-  button.disabled = false;
-  button.textContent = "Send order on WhatsApp";
-  if (isBot) return;
-
-  // 3) Tell the customer to tap Send, with a button in case WhatsApp didn't open
-  showWhatsAppConfirmation(message, {
-    name: data.get("name"), phone: data.get("phone"), readyAt, needsCall, waUrl,
-    opened: Boolean(waWindow),
-  });
-  cart = [];
-  renderCart();
-  form.reset();
+  fetch(WEB3FORMS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  }).catch(() => { /* backup only: WhatsApp is the main way orders arrive */ });
 }
 
 // ---------- WhatsApp helpers ----------
@@ -423,15 +416,13 @@ function buildWhatsAppText({ name, phone, minutes, readyAt, notes, needsCall }) 
   ].filter((l) => l !== null).join("\n");
 }
 
-function showWhatsAppConfirmation(box, { name, phone, readyAt, needsCall, waUrl, opened }) {
+function showWhatsAppConfirmation(box, { name, phone, readyAt, needsCall, waUrl }) {
   box.className = "form-message success";
   box.replaceChildren();
   const title = document.createElement("strong");
-  title.textContent = opened ? `Almost done, ${name}!` : `One more step, ${name}!`;
+  title.textContent = `Almost done, ${name}!`;
   const text = document.createElement("span");
-  text.textContent = opened
-    ? " WhatsApp opened with your order. Tap Send in WhatsApp to send it to us."
-    : " Tap the button below to send your order to us on WhatsApp.";
+  text.textContent = " WhatsApp is opening with your order. Tap Send in WhatsApp to send it to us.";
   const extra = document.createElement("span");
   extra.className = "form-message-extra";
   extra.textContent = needsCall
@@ -442,7 +433,7 @@ function showWhatsAppConfirmation(box, { name, phone, readyAt, needsCall, waUrl,
   link.href = waUrl;
   link.target = "_blank";
   link.rel = "noopener";
-  link.textContent = opened ? "WhatsApp didn't open? Tap here" : "Send order on WhatsApp";
+  link.textContent = "WhatsApp didn't open? Tap here";
   box.append(title, text, extra, link);
   box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
@@ -484,7 +475,7 @@ document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => { closeOptions(); closeCart(); });
 document.getElementById("optionsAdd").addEventListener("click", confirmOptions);
 document.getElementById("optionsCancel").addEventListener("click", closeOptions);
-document.getElementById("orderForm").addEventListener("submit", submitOrder);
+document.getElementById("submitBtn").addEventListener("click", sendOrder);
 document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTabs();

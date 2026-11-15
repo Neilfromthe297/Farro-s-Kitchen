@@ -41,7 +41,9 @@ Every order arrives two ways:
 
 **If you get the email but no WhatsApp message**, the customer probably didn't tap Send. Call or message them to confirm.
 
-To change the WhatsApp number, edit `WHATSAPP_NUMBER` at the top of `script.js` (include the country code, e.g. `+297 ...`).
+To change the WhatsApp number, edit `WHATSAPP_NUMBER` at the top of `script.js` (include the country code, e.g. `+297 ...`) **and** the number in the green button's link in `index.html` (`https://wa.me/2975691341`).
+
+**After any change to `script.js` or `style.css`,** raise the `?v=7` number in `index.html` (e.g. to `?v=8`) so customers' phones load the new version right away instead of an old saved copy.
 
 ## Step 3: Make orders arrive in your email (Web3Forms, free) ✅ done
 
