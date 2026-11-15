@@ -199,13 +199,8 @@ body {
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ===== WHATSAPP ===== */
-.btn-whatsapp { background: #1f9e4b; }
-.btn-whatsapp:hover { background: #17803c; }
+/* ===== ORDER CONFIRMATION ===== */
 .form-message.success {
-  display: flex; flex-direction: column; gap: 8px;
-  background: #f0fdf4; border: 2px solid #1f9e4b; border-radius: 12px; padding: 14px;
+  background: #f0fdf4; border: 2px solid #15803d; border-radius: 12px; padding: 14px;
 }
-.form-message-extra { color: var(--text); font-weight: 400; }
-.form-message .btn { margin-top: 4px; }
 .btn-full { text-align: center; }

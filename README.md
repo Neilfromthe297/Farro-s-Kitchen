@@ -4,7 +4,7 @@ A simple website where customers:
 1. Browse the menu (Chicken, Steak, Fish)
 2. Add items to their cart
 3. Enter their name, phone, and email, and choose **how many minutes until pickup**
-4. Tap **Send order on WhatsApp**: WhatsApp opens with the order typed out to the restaurant (+297 569 1341), and the customer taps **Send**. **An email copy is sent automatically too**, as a backup
+4. Click **Place order**, and **the restaurant receives an email** with the full order
 
 No coding experience needed to launch it. Follow the steps below in order.
 
@@ -33,17 +33,7 @@ No coding experience needed to launch it. Follow the steps below in order.
 
 > 💡 Get a free code editor: **Visual Studio Code** (code.visualstudio.com). It makes editing these files much easier than Notepad.
 
-## How orders arrive: WhatsApp + email
-
-Every order arrives two ways:
-1. **WhatsApp (main):** the customer's WhatsApp opens with the order typed out to `WHATSAPP_NUMBER` (top of `script.js`). They tap **Send**.
-2. **Email (backup):** a copy is always emailed through Web3Forms (Step 3), even if the customer forgets to tap Send.
-
-**If you get the email but no WhatsApp message**, the customer probably didn't tap Send. Call or message them to confirm.
-
-To change the WhatsApp number, edit `WHATSAPP_NUMBER` at the top of `script.js` (include the country code, e.g. `+297 ...`) **and** the number in the green button's link in `index.html` (`https://wa.me/2975691341`).
-
-**After any change to `script.js` or `style.css`,** raise the `?v=7` number in `index.html` (e.g. to `?v=8`) so customers' phones load the new version right away instead of an old saved copy.
+**After any change to `script.js` or `style.css`,** raise the `?v=8` number in `index.html` (e.g. to `?v=9`) so customers' phones load the new version right away instead of an old saved copy.
 
 ## Step 3: Make orders arrive in your email (Web3Forms, free) ✅ done
 
