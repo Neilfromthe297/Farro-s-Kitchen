@@ -49,16 +49,17 @@ Orders go to the email address used to create that key on **web3forms.com**.
 
 **What the email looks like:**
 ```
-Subject: NEW ORDER: Jane Smith — pickup in 30 min (6:45 PM)
+Subject: NEW ORDER: Maria Croes — pickup in 30 min (6:45 PM)
 
-customer_name:        Jane Smith
-customer_phone:       (555) 555-5555
-email:                jane@example.com
+customer_name:        Maria Croes
+customer_phone:       +297 560 1234
+email:                maria@example.com
 pickup_in:            30 minutes
 pickup_time:          6:45 PM
-order:                2 x Ribeye Steak (12 oz) — $59.98
-                      1 x Fish & Chips — $16.99
-total:                $76.97
+order:                2 x 1/2 Chicken — Afl. 47.00
+                            Sides: Rice, French Fries
+                      1 x Fried Yuca (Large) — Afl. 12.50
+total:                Afl. 59.50
 special_instructions: No onions please
 ```
 You can hit **Reply** in your email to answer the customer directly.
@@ -78,7 +79,7 @@ You can hit **Reply** in your email to answer the customer directly.
   - Platters automatically ask the customer to choose 2 sides. Add `noSides: true` to skip that.
   - `callToOrder: true` shows a "Call to order" button instead of "+ Add" (used for the family meals until they have prices).
   - `img` is optional. Without it, the dish shows an icon instead of a photo.
-- **Address, hours, phone:** in `index.html`, search for `123 Main Street`, `Mon–Sat` and `(555) 123-4567`.
+- **Address, hours, phone:** in `index.html`, search for `Oranjestad, Aruba`, `Mon–Sat` and `(555) 123-4567`.
   Also change `PHONE` near the top of `script.js` (used for the "Call to order" buttons and the error message).
 - **Pickup time choices:** in `index.html`, edit the `<option>` lines under "I'll pick up in…".
 - **Colors:** at the top of `style.css`, change `--brand` (for example `#15803d` for green).
@@ -96,7 +97,7 @@ Other free options: **GitHub Pages** or **Cloudflare Pages**.
 
 ## Step 6 (optional): Get your own domain
 
-1. Buy a domain like `farroskitchen.com` (about $10–20 a year) from Namecheap, Cloudflare, Porkbun, or a similar registrar.
+1. Buy a domain like `lagranja.aw` (Aruba's own .aw ending) or a `.com` from a registrar like Namecheap, Cloudflare or Porkbun.
 2. In Netlify go to **Domain settings → Add custom domain** and follow the instructions.
 
 ## Fake-order protection
