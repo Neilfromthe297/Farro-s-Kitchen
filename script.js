@@ -277,15 +277,38 @@ function openOptions(item) {
   document.getElementById("optionsError").textContent = "";
   document.getElementById("options").classList.add("open");
   document.getElementById("overlay").classList.add("show");
+  pushPanel("options");
+  updateScrollLock();
 }
 
-function closeOptions() {
+function closeOptions(fromBackButton = false) {
+  if (!optionsItem) return;
   document.getElementById("options").classList.remove("open");
-  if (!document.getElementById("cart").classList.contains("open")) {
-    document.getElementById("overlay").classList.remove("show");
-  }
+  if (!isCartOpen()) document.getElementById("overlay").classList.remove("show");
   optionsItem = null;
+  if (!fromBackButton) popPanel("options");
+  updateScrollLock();
 }
+
+// ---------- Phone helpers ----------
+const isCartOpen = () => document.getElementById("cart").classList.contains("open");
+
+// Stop the page behind the cart / popup from scrolling
+function updateScrollLock() {
+  document.body.classList.toggle("no-scroll", isCartOpen() || Boolean(optionsItem));
+}
+
+// The phone's back button closes the cart or popup instead of leaving the site
+function pushPanel(name) {
+  if (history.state?.panel !== name) history.pushState({ panel: name }, "");
+}
+function popPanel(name) {
+  if (history.state?.panel === name) history.back();
+}
+window.addEventListener("popstate", () => {
+  if (optionsItem) closeOptions(true);
+  else if (isCartOpen()) closeCart(true);
+});
 
 function confirmOptions() {
   const item = optionsItem;
@@ -312,6 +335,7 @@ function addToCart(item, size = null, sides = []) {
   if (existing) existing.qty += 1;
   else cart.push({ key, id: item.id, size, sides, price: size ? item.sizes[size] : item.price, qty: 1 });
   renderCart();
+  bumpCart();
 }
 
 function changeQty(key, amount) {
@@ -351,8 +375,30 @@ function renderCart() {
         </div>
       </div>`).join("");
   }
-  document.getElementById("cartCount").textContent = cart.reduce((a, l) => a + l.qty, 0);
+  const count = cart.reduce((a, l) => a + l.qty, 0);
+  document.getElementById("cartCount").textContent = count;
   document.getElementById("cartTotal").textContent = money(cartTotal());
+  updateOrderBar();
+}
+
+// "View order" bar at the bottom of the screen once the cart has items
+function updateOrderBar() {
+  const count = cart.reduce((a, l) => a + l.qty, 0);
+  const bar = document.getElementById("orderBar");
+  bar.hidden = count === 0 || isCartOpen();
+  document.body.classList.toggle("has-order-bar", count > 0);
+  document.getElementById("orderBarCount").textContent = count;
+  document.getElementById("orderBarTotal").textContent = money(cartTotal());
+}
+
+// Small bounce on the cart so customers see something was added
+function bumpCart() {
+  ["openCart", "orderBar"].forEach((id) => {
+    const el = document.getElementById(id);
+    el.classList.remove("bump");
+    void el.offsetWidth;          // restart the animation
+    el.classList.add("bump");
+  });
 }
 
 // ---------- Opening hours ----------
@@ -450,10 +496,17 @@ function openCart() {
   updateOpeningStatus();
   document.getElementById("cart").classList.add("open");
   document.getElementById("overlay").classList.add("show");
+  pushPanel("cart");
+  updateOrderBar();
+  updateScrollLock();
 }
-function closeCart() {
+function closeCart(fromBackButton = false) {
+  if (!isCartOpen()) return;
   document.getElementById("cart").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
+  if (!fromBackButton) popPanel("cart");
+  updateOrderBar();
+  updateScrollLock();
 }
 
 // ---------- Send the order by email ----------
@@ -581,6 +634,7 @@ window.addEventListener("scroll", () => requestAnimationFrame(() => {
 updateHeaderSize();
 
 document.getElementById("optionsBody").addEventListener("change", () => {
+  document.getElementById("optionsError").textContent = "";
   const counter = document.getElementById("sideCount");
   if (!counter) return;
   const count = findCategory(optionsItem.category).sides;
@@ -595,7 +649,8 @@ document.getElementById("cartItems").addEventListener("click", (e) => {
 
 document.getElementById("openCart").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
-document.getElementById("overlay").addEventListener("click", () => { closeOptions(); closeCart(); });
+document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
+document.getElementById("orderBar").addEventListener("click", openCart);
 document.getElementById("optionsAdd").addEventListener("click", confirmOptions);
 document.getElementById("optionsCancel").addEventListener("click", closeOptions);
 document.getElementById("orderForm").addEventListener("submit", submitOrder);

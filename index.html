@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#241612">
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
   <link rel="preload" href="fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/bitter-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
   <!-- Icons: Lucide v0.460.0 (https://lucide.dev), ISC License.
@@ -145,6 +146,13 @@
     </div>
   </footer>
 
+  <!-- ===== "VIEW ORDER" BAR (phones: bottom of the screen) ===== -->
+  <button type="button" class="order-bar" id="orderBar" hidden>
+    <span class="order-bar-count" id="orderBarCount">0</span>
+    <span class="order-bar-label" data-i18n="view_order">View order</span>
+    <span class="order-bar-total" id="orderBarTotal">Afl. 0.00</span>
+  </button>
+
   <!-- ===== CART DRAWER ===== -->
   <div class="overlay" id="overlay"></div>
   <aside class="cart" id="cart" aria-label="Your order">
@@ -166,16 +174,16 @@
       <h3 data-i18n="pickup_details">Pickup details</h3>
 
       <label><span data-i18n="f_name">Your name</span>
-        <input type="text" name="name" required placeholder="Maria Croes">
+        <input type="text" name="name" required placeholder="Maria Croes" autocomplete="name" autocapitalize="words" enterkeyhint="next">
       </label>
 
       <label><span data-i18n="f_phone">Phone number</span>
-        <input type="tel" name="phone" required placeholder="+297 560 1234"
+        <input type="tel" name="phone" required placeholder="+297 560 1234" inputmode="tel" autocomplete="tel" enterkeyhint="next"
                pattern="[0-9+\(\)\-\s]{7,20}" title="Please enter a real phone number (at least 7 digits)" data-i18n-title="f_phone_title">
       </label>
 
       <label><span data-i18n="f_email">Email (for your receipt)</span>
-        <input type="email" name="email" required placeholder="you@example.com">
+        <input type="email" name="email" required placeholder="you@example.com" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="next">
       </label>
 
       <fieldset class="pickup-method">
@@ -187,7 +195,7 @@
       </fieldset>
 
       <label class="car-field" id="carField" hidden><span data-i18n="car_label">Your car (optional)</span>
-        <input type="text" name="car" maxlength="60" placeholder="e.g. White Toyota Yaris" data-i18n-placeholder="car_ph">
+        <input type="text" name="car" maxlength="60" autocomplete="off" placeholder="e.g. White Toyota Yaris" data-i18n-placeholder="car_ph">
       </label>
 
       <label><span data-i18n="pickup_in">I'll pick up in…</span>
@@ -225,7 +233,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="i18n.js?v=19"></script>
-  <script src="script.js?v=19"></script>
+  <script src="i18n.js?v=20"></script>
+  <script src="script.js?v=20"></script>
 </body>
 </html>

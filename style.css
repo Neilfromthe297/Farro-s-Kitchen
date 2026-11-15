@@ -359,6 +359,7 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 .form-message.success { color: var(--success); background: #f0fdf4; border: 2px solid var(--success); }
 .form-message.error { color: var(--error); background: #fef2f2; border: 1px solid #fecaca; }
 .form-message .icon { width: 22px; height: 22px; margin-top: 1px; }
+.form-message.success:empty, .form-message.error:empty { display: none; }
 
 /* ===== OPTIONS POPUP ===== */
 .options {
@@ -385,16 +386,77 @@ body.scrolled .logo img { height: var(--logo-h-small); }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ===== PHONE-FRIENDLY EXTRAS ===== */
+body.no-scroll { overflow: hidden; }
+
+/* "View order" bar */
+.order-bar {
+  position: fixed; z-index: 25;
+  left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+  margin: 0 auto; max-width: 520px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border: 0; border-radius: 14px;
+  background: var(--brand); color: #fff; cursor: pointer;
+  font-family: var(--font-body); font-size: 1.05rem; font-weight: 700;
+  box-shadow: 0 10px 30px rgba(212, 18, 28, .35), 0 2px 6px rgba(0,0,0,.15);
+}
+.order-bar[hidden] { display: none; }
+.order-bar:hover { background: var(--brand-dark); }
+.order-bar-count {
+  background: var(--yellow); color: var(--dark); border-radius: 8px;
+  min-width: 30px; padding: 2px 8px; text-align: center;
+}
+.order-bar-label { flex: 1; text-align: left; }
+.order-bar-total { font-family: var(--font-heading); font-weight: 800; }
+body.has-order-bar { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+body.has-order-bar .toast { bottom: calc(92px + env(safe-area-inset-bottom)); }
+
+/* Bounce when something is added */
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.bump { animation: bump .35s ease; }
+
+/* Order button stays visible at the bottom of the checkout */
+#submitBtn {
+  position: sticky; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 2;
+  padding: 15px; font-size: 1.05rem; box-shadow: 0 6px 18px rgba(212, 18, 28, .3);
+}
+#submitBtn:disabled { box-shadow: none; }
+.cart { padding-bottom: calc(20px + env(safe-area-inset-bottom)); overscroll-behavior: contain; }
+.options { overscroll-behavior: contain; }
+
+/* Comfortable tap targets (at least 40px) */
+.qty button { width: 40px; height: 40px; font-size: 1.2rem; }
+.add-btn { min-height: 40px; }
+.tab { min-height: 42px; }
+.choice { min-height: 48px; }
+.lang-switch button { min-height: 36px; }
+
 /* ===== PHONES ===== */
 @media (max-width: 600px) {
   :root { --header-h: 64px; --header-h-top: 112px; --logo-h: 96px; --logo-h-small: 48px; --tabs-h: 56px; }
   .topbar { padding: 0 12px; }
   .topnav { display: none; }
   .lang-switch { margin-left: auto; margin-right: 8px; }
-  .lang-switch button { padding: 6px 8px; }
   .cart-button { padding: 9px 12px; }
   .cart-button .cart-label { display: none; }
-  .hero { padding: 64px 18px 72px; }
+  .hero { padding: 36px 18px 44px; }
+  .hero h1 { font-size: 1.85rem; }
+  .hero p { font-size: 1rem; margin-bottom: 20px; }
+  .open-status { margin-bottom: 12px; }
+  .lang-switch button { min-height: 40px; padding: 6px 9px; }
+
+  /* Size / sides popup slides up from the bottom */
+  .options {
+    left: 0; right: 0; top: auto; bottom: 0; width: 100%; max-height: 88%;
+    border-radius: 20px 20px 0 0;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+    transform: translateY(100%); transition: transform .25s ease, opacity .15s;
+  }
+  .options.open { transform: translateY(0); }
+  .options::before {
+    content: ""; display: block; width: 44px; height: 5px; border-radius: 3px;
+    background: #e0d4c8; margin: 0 auto 14px;
+  }
   .tabs { padding: 10px 12px; }
   .item-photo { width: 96px; height: 96px; }
 }
