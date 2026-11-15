@@ -762,6 +762,14 @@ document.getElementById("openCart").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", () => (optionsItem ? closeOptions() : closeCart()));
 document.getElementById("orderBar").addEventListener("click", openCart);
+
+// Tapping the logo refreshes the page and starts at the top
+document.getElementById("logoLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+  location.reload();
+});
 document.getElementById("receipt").addEventListener("click", (e) => {
   if (!e.target.closest("#newOrderBtn")) return;
   clearLastOrder();
