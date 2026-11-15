@@ -8,7 +8,7 @@ const WEB3FORMS_ACCESS_KEY = "fc8fd1ce-9ecf-439d-997d-4363f6bbb754";
 const WEB3FORMS_URL = "https://api.web3forms.com/submit";
 
 // Restaurant phone (used for "Call to order" buttons and error messages)
-const PHONE = "+297 569 1341";
+const PHONE = "+297 582 2065";
 
 // Currency shown in front of every price
 const CURRENCY = "Afl.";

@@ -79,7 +79,7 @@ You can hit **Reply** in your email to answer the customer directly.
   - Platters automatically ask the customer to choose 2 sides. Add `noSides: true` to skip that.
   - `callToOrder: true` shows a "Call to order" button instead of "+ Add" (used for the family meals until they have prices).
   - `img` is optional. Without it, the dish shows an icon instead of a photo.
-- **Address, hours, phone:** in `index.html`, search for `Zandstraat 2`, `Every day` and `+297 569 1341`.
+- **Address, hours, phone:** in `index.html`, search for `Zandstraat 2`, `Every day` and `+297 582 2065` (also `PHONE` at the top of `script.js`). The map location is in the "MAP" section of `index.html`.
 - **Opening hours for ordering:** edit `OPENING_HOURS` at the top of `script.js` (24-hour time, Aruba time). Use `null` for a day you're closed, e.g. `Sunday: null,`. Online ordering is paused outside these hours, and customers can only pick a pickup time before closing.
   Also change `PHONE` near the top of `script.js` (used for the "Call to order" buttons and the error message).
 - **Pickup time choices:** in `index.html`, edit the `<option>` lines under "I'll pick up in…".
