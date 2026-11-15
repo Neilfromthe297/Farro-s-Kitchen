@@ -6,13 +6,17 @@
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <meta name="description" content="Order chicken, steak, seafood and more online from La Granja and pick it up fresh.">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
   <!-- ===== TOP BAR ===== -->
   <header class="topbar">
     <a class="logo" href="#"><img src="images/logo.png" alt="La Granja"></a>
+    <nav class="topnav">
+      <a href="#menu">Menu</a>
+      <a href="#about">About</a>
+    </nav>
     <button class="cart-button" id="openCart" aria-label="Open cart">
       🛒 Cart <span class="cart-count" id="cartCount">0</span>
     </button>
@@ -32,6 +36,25 @@
   <main class="menu" id="menuList"></main>
 
   <!-- ===== INFO ===== -->
+  <!-- ===== ABOUT ===== -->
+  <section class="about" id="about">
+    <p class="about-kicker">About</p>
+    <h2>The story behind our dishes</h2>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>What makes us stand out</h3>
+        <p>At the heart of La Granja is a fusion of authentic Peruvian heritage and the warmth of a family-friendly dining experience. Our dedication to bringing genuine Latin American flavors is evident in every dish we serve. We pride ourselves on not just cooking food but on crafting an authentic culinary experience that celebrates our roots.</p>
+        <p>What truly distinguishes us is our commitment to creating a welcoming atmosphere that feels like home. Each La Granja restaurant is more than a dining spot; it’s a place where families and friends come together, fostering connections in every meal. Our journey from a modest beginning in Aruba to our present growth across South and Central Florida is a testament to our adaptability and commitment to our heritage. We continually evolve to meet our customers’ diverse tastes while staying true to our Latin American roots.</p>
+      </div>
+      <div class="about-card">
+        <h3>Our mission statement</h3>
+        <p>Our mission is to quickly serve our customers homestyle food. We are dedicated to preparing and serving high-quality, flavorful Latin American flavors in a welcoming environment, where every meal is an opportunity to celebrate culture. Our commitment extends beyond the plate, as we strive to be a positive, contributing member of every community we serve.</p>
+        <a href="#menu" class="btn">Order online</a>
+      </div>
+    </div>
+  </section>
+
   <section class="info">
     <div>
       <h3>📍 Location</h3>
@@ -116,6 +139,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="script.js?v=9"></script>
+  <script src="script.js?v=10"></script>
 </body>
 </html>
