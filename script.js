@@ -13,6 +13,21 @@ const PHONE = "+297 569 1341";
 // Currency shown in front of every price
 const CURRENCY = "Afl.";
 
+/* ---------- OPENING HOURS (Aruba time) ----------
+   One line per day: [opens, closes] in 24-hour time, or null if closed.
+   Orders are only accepted while open, and the pickup time must be
+   no later than closing time. */
+const TIME_ZONE = "America/Aruba";
+const OPENING_HOURS = {
+  Monday:    ["11:00", "21:00"],
+  Tuesday:   ["11:00", "21:00"],
+  Wednesday: ["11:00", "21:00"],
+  Thursday:  ["11:00", "21:00"],
+  Friday:    ["11:00", "21:00"],
+  Saturday:  ["11:00", "21:00"],
+  Sunday:    ["11:00", "21:00"],
+};
+
 /* ---------- FAKE-ORDER PROTECTION (amounts in florins) ---------- */
 // Most of one dish (same options) a customer can order online
 const MAX_QTY_PER_ITEM = 10;
@@ -282,7 +297,90 @@ function renderCart() {
   document.getElementById("cartTotal").textContent = money(cartTotal());
 }
 
+// ---------- Opening hours ----------
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const toMinutes = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
+
+// Current day and minutes since midnight in Aruba, whatever the phone's time zone
+function arubaNow() {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: TIME_ZONE, weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date()).map((p) => [p.type, p.value]));
+  return { day: parts.weekday, minutes: Number(parts.hour) * 60 + Number(parts.minute) };
+}
+
+function clockLabel(totalMinutes) {
+  const m = ((totalMinutes % 1440) + 1440) % 1440;
+  const h = Math.floor(m / 60), min = m % 60;
+  return `${h % 12 || 12}:${String(min).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}
+
+function todaysHours(day = arubaNow().day) {
+  const h = OPENING_HOURS[day];
+  return h ? { open: toMinutes(h[0]), close: toMinutes(h[1]) } : null;
+}
+
+function isOpenNow() {
+  const now = arubaNow(), h = todaysHours(now.day);
+  return Boolean(h) && now.minutes >= h.open && now.minutes < h.close;
+}
+
+// Can an order placed now be picked up in `minutes` minutes, before closing?
+function canPickupIn(minutes) {
+  const now = arubaNow(), h = todaysHours(now.day);
+  return isOpenNow() && now.minutes + minutes <= h.close;
+}
+
+// "We open today at 11:00 AM" / "We open Monday at 11:00 AM"
+function nextOpening() {
+  const now = arubaNow();
+  const startIndex = DAYS.indexOf(now.day);
+  for (let i = 0; i < 8; i++) {
+    const day = DAYS[(startIndex + i) % 7], h = todaysHours(day);
+    if (!h) continue;
+    if (i === 0 && now.minutes >= h.open) continue;
+    const when = i === 0 ? "today" : i === 1 ? "tomorrow" : day;
+    return `${when} at ${clockLabel(h.open)}`;
+  }
+  return null;
+}
+
+function closedMessage() {
+  const next = nextOpening();
+  return `We're closed right now, so online ordering is paused.${next ? ` We open ${next}.` : ""}`;
+}
+
+// Updates the open/closed badge, pickup time choices and the order button
+function updateOpeningStatus() {
+  const open = isOpenNow();
+  const h = todaysHours();
+  const status = document.getElementById("openStatus");
+  status.textContent = open
+    ? `🟢 Open now · until ${clockLabel(h.close)}`
+    : `🔴 Closed · opens ${nextOpening() || "soon"}`;
+  status.className = `open-status ${open ? "is-open" : "is-closed"}`;
+
+  const select = document.getElementById("pickupMinutes");
+  let firstValid = null;
+  [...select.options].forEach((o) => {
+    const ok = canPickupIn(Number(o.value));
+    o.disabled = !ok;
+    o.textContent = o.textContent.replace(/ \(.*\)$/, "") + (ok || !open ? "" : " (after closing)");
+    if (ok && firstValid === null) firstValid = o;
+  });
+  if (select.selectedOptions[0]?.disabled && firstValid) firstValid.selected = true;
+
+  const canOrder = open && firstValid !== null;
+  const notice = document.getElementById("closedNotice");
+  notice.hidden = canOrder;
+  notice.textContent = open
+    ? `We're about to close, so online ordering is paused. Please call us at ${PHONE}.`
+    : closedMessage();
+  document.getElementById("submitBtn").disabled = !canOrder;
+}
+
 function openCart() {
+  updateOpeningStatus();
   document.getElementById("cart").classList.add("open");
   document.getElementById("overlay").classList.add("show");
 }
@@ -324,8 +422,13 @@ async function submitOrder(event) {
   const isDriveThru = pickupMethod === "Drive-thru";
   const car = String(data.get("car") || "").trim();
   const minutes = Number(data.get("pickup_minutes"));
-  const readyAt = new Date(Date.now() + minutes * 60000)
-    .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  if (!canPickupIn(minutes)) {
+    updateOpeningStatus();
+    return fail(isOpenNow()
+      ? "That pickup time is after closing time. Please choose an earlier time."
+      : closedMessage());
+  }
+  const readyAt = clockLabel(arubaNow().minutes + minutes);
 
   // Build a readable order list for the email
   const orderLines = cart.map((l) => {
@@ -377,8 +480,8 @@ async function submitOrder(event) {
   } catch (err) {
     fail(`❌ Sorry, your order didn't go through. Please call us at ${PHONE}.`);
   } finally {
-    button.disabled = false;
     button.textContent = "Place order";
+    updateOpeningStatus();
   }
 }
 
@@ -433,3 +536,5 @@ document.getElementById("year").textContent = new Date().getFullYear();
 renderTabs();
 renderMenu();
 renderCart();
+updateOpeningStatus();
+setInterval(updateOpeningStatus, 60 * 1000);

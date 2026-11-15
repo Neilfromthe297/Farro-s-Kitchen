@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Granja | Order for Pickup</title>
   <link rel="icon" type="image/png" href="images/logo.png">
-  <meta name="description" content="Order chicken, steak, seafood and more online from La Granja in Oranjestad, Aruba, and pick it up fresh.">
-  <link rel="stylesheet" href="style.css?v=13">
+  <meta name="description" content="Order chicken, steak, seafood and more online from La Granja at Zandstraat 2, Oranjestad, Aruba, and pick it up fresh. Open every day 11:00 AM – 9:00 PM.">
+  <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -24,6 +24,7 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero">
+    <p class="open-status" id="openStatus"></p>
     <h1>Grilled fresh. Ready when you are.</h1>
     <p>Order online, choose your pickup time, and we'll have it hot and waiting.</p>
     <a href="#menu" class="btn">Start your order</a>
@@ -58,11 +59,12 @@
   <section class="info">
     <div>
       <h3>📍 Location</h3>
-      <p>Oranjestad, Aruba</p>
+      <p>Zandstraat 2<br>Oranjestad, Aruba</p>
+      <a class="info-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Granja+Zandstraat+2+Oranjestad+Aruba" target="_blank" rel="noopener">Get directions →</a>
     </div>
     <div>
       <h3>🕒 Hours</h3>
-      <p>Mon–Sat: 11am – 9pm<br>Sun: 12pm – 8pm</p>
+      <p>Every day<br>11:00 AM – 9:00 PM</p>
     </div>
     <div>
       <h3>📞 Call us</h3>
@@ -89,6 +91,7 @@
 
     <!-- CHECKOUT FORM -->
     <form id="orderForm" class="order-form">
+      <p class="closed-notice" id="closedNotice" hidden></p>
       <h3>Pickup details</h3>
 
       <label>Your name
@@ -117,7 +120,7 @@
       </label>
 
       <label>I'll pick up in…
-        <select name="pickup_minutes" required>
+        <select name="pickup_minutes" id="pickupMinutes" required>
           <option value="20">20 minutes</option>
           <option value="30" selected>30 minutes</option>
           <option value="45">45 minutes</option>
@@ -151,6 +154,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="script.js?v=13"></script>
+  <script src="script.js?v=14"></script>
 </body>
 </html>
